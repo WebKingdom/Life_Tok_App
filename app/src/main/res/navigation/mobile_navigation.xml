@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/navigation_map"
+        android:name="com.sszabo.life_tok.ui.map.MapFragment"
+        android:label="@string/title_map"
+        tools:layout="@layout/fragment_map" />
+
+    <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.sszabo.life_tok.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
