@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "882983177264",
+    "project_id": "life-tok-app",
+    "storage_bucket": "life-tok-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882983177264:android:5b767f76af08db9d99f1f5",
+        "android_client_info": {
+          "package_name": "com.sszabo.life_tok"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "882983177264-igvk9tsjtffth0v0i75drbqdmiusdojb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sszabo.life_tok",
+            "certificate_hash": "fde183a2a125d1c997cc7798b450c7981952194a"
+          }
+        },
+        {
+          "client_id": "882983177264-0vvdi20j54539j5e4c9dcggceahcq663.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3qgpmrxd8ricGMkRl1yU7CKnKPxeNiXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "882983177264-0vvdi20j54539j5e4c9dcggceahcq663.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -24,24 +26,29 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.sszabo.life_tok.databinding.FragmentHomeBinding;
+import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentMapBinding;
-import com.sszabo.life_tok.ui.home.HomeViewModel;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+import java.util.concurrent.ExecutionException;
 
-    private static final String TAG = "MapFragment";
+public class MapFragment extends Fragment implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
+
+    private static final String TAG = MapFragment.class.getSimpleName();
 
     private static final float DEFAULT_ZOOM = 10;
 
     private MapViewModel mapViewModel;
     private FragmentMapBinding binding;
 
-    private GoogleMap mMap;
+    private MapView mMapView;
+    private GoogleMap mGoogleMap;
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Geocoder geocoder;
@@ -54,11 +61,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textMap;
+        final SearchView searchView = root.findViewById(R.id.searchViewMap);
         mapViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                textView.setText(s);
+                searchView.getQuery();
             }
         });
 
@@ -66,24 +73,77 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         geocoder = new Geocoder(this.getContext());
         currentLocation = null;
 
+        mMapView = root.findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+
+        // displays maps immediately
+        mMapView.onResume();
+
+        try {
+            MapsInitializer.initialize(this.getContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        mMapView.getMapAsync(this);
+
+        Log.d(TAG, "onCreateView: Created view");
         return root;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // TODO save state
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mMapView.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mMapView.onStop();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mMapView.onDestroy();
         binding = null;
     }
 
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
+        mGoogleMap = googleMap;
 
         if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "onMapReady: Location permission denied/unavailable, requesting access.");
             ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
+
+        mGoogleMap.setMyLocationEnabled(true);
 
         fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
             @Override
@@ -93,9 +153,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     currentLocation = location;
                     LatLng curCoord = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curCoord, DEFAULT_ZOOM));
-                    mMap.clear();
-                    mMap.addMarker(new MarkerOptions().position(curCoord).title("Current Location"));
+                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curCoord, DEFAULT_ZOOM));
+                    mGoogleMap.clear();
+                    mGoogleMap.addMarker(new MarkerOptions().position(curCoord).title("Current Location"));
                 } else {
                     Log.d(TAG, "onMapReady: Could not get current location.");
                     Toast.makeText(MapFragment.this.getContext(), "Could not get current location.", Toast.LENGTH_SHORT).show();
