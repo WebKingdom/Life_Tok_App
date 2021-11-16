@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout0"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    tools:context=".ui.login.LoginActivity">
+
+    <TextView
+        android:id="@+id/txt_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:text="@string/welcome"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="40sp" />
+
+    <EditText
+        android:id="@+id/txt_email"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/custom_input"
+        android:drawableStart="@drawable/custom_email_input"
+        android:drawablePadding="10dp"
+        android:hint="@string/prompt_email"
+        android:inputType="textEmailAddress"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textColorHint="@color/grey"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/txt_password"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/custom_input"
+        android:drawableStart="@drawable/custom_pass_input"
+        android:drawablePadding="10dp"
+        android:hint="@string/prompt_password"
+        android:inputType="textPassword"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textColorHint="@color/grey"
+        android:textSize="20sp" />
+
+    <CheckBox
+        android:id="@+id/checkbox_show_pass"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="70dp"
+        android:layout_marginBottom="20dp"
+        android:buttonTint="@android:color/white"
+        android:text="@string/action_show_password"
+        android:textColor="@android:color/white" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="@string/action_login"
+        android:textSize="25sp"
+        android:textColor="@color/white"
+        android:background="@color/royal_blue"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_sign_up"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="@color/royal_blue"
+        android:text="@string/action_sign_up"
+        android:textColor="@color/white"
+        android:textSize="25sp" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:indeterminate="true"
+        android:indeterminateTint="@android:color/white"
+        android:visibility="invisible" />
+
+</LinearLayout>

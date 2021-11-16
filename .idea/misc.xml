@@ -3,6 +3,29 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/custom_email_input.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/custom_input.xml" value="0.5137895812053116" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/custom_pass_input.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/custom_text_input.xml" value="0.5326864147088867" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_account_circle_18.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_account_circle_24.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_baseline_email_24.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_baseline_lock_24.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_baseline_map_24.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_baseline_short_text_24.xml" value="0.5326864147088867" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_focus_short_text_24.xml" value="0.5326864147088867" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_focused_email_24.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_focused_lock_24.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_launcher_background.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.5432291666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.33046875" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout-w936dp/activity_login.xml" value="0.3921875" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_login.xml" value="0.260343087790111" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_login2.xml" value="0.5229166666666667" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_main.xml" value="0.2532795156407669" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_register.xml" value="0.260343087790111" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3854166666666667" />
         <entry key="app/src/main/res/drawable/baseline_account_circle_18.xml" value="0.23385416666666667" />
         <entry key="app/src/main/res/drawable/baseline_account_circle_24.xml" value="0.23385416666666667" />
@@ -21,6 +44,7 @@
       </map>
     </option>
   </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

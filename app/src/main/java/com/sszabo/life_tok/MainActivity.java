@@ -16,6 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.sszabo.life_tok.databinding.ActivityMainBinding;
+import com.sszabo.life_tok.ui.login.LoginActivity;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
 import java.util.Collections;
@@ -67,14 +68,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startLogin() {
-        Intent intent = FirebaseUtil.getAuthUI().createSignInIntentBuilder()
-                .setAvailableProviders(Collections.singletonList(
-                        new AuthUI.IdpConfig.EmailBuilder().build()))
-                .setIsSmartLockEnabled(false)
-                .build();
-//        startActivityForResult(intent, 90);
-        // calls onActivityResult()
-        startActivityIfNeeded(intent, RC_LOGIN);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+
         mViewModel.setIsLoggingIn(true);
     }
 

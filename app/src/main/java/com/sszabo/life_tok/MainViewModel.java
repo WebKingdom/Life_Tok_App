@@ -9,7 +9,7 @@ public class MainViewModel extends ViewModel {
 
     public MainViewModel() {
         // TODO change to false if want login
-        isLoggingIn = true;
+        isLoggingIn = false;
     }
 
     public boolean getIsLoggingIn() {
