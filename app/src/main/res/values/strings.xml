@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">Life_Tok</string>
-    <string name="app_label">Life Tok</string>
+    <string name="app_name">LifeTok</string>
     <string name="search_hint">Search</string>
     <string name="title_home">Home</string>
     <string name="title_map">Map</string>
@@ -11,7 +10,6 @@
     <string name="prompt_confirm_password">Confirm Password</string>
     <string name="prompt_phone">Phone #</string>
     <string name="prompt_address">Address</string>
-
     <string name="prompt_fName">First Name</string>
     <string name="prompt_lName">Last Name</string>
     <string name="prompt_username">Username</string>
@@ -25,6 +23,6 @@
     <string name="register">Register</string>
 
     <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_password">Password must be >6 characters and not contain white space</string>
     <string name="login_failed">Login failed</string>
 </resources>

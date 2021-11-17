@@ -13,7 +13,7 @@ import com.google.android.gms.maps.GoogleMap;
 
 public class MapViewModel extends ViewModel {
 
-    private static final String TAG = "MapViewModel";
+    private static final String TAG = MapViewModel.class.getSimpleName();
 
     private MutableLiveData<String> mText;
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 public class User {
 
-    private int id;
+    private String id;
     private String firstName;
     private String lastName;
 
@@ -15,11 +15,11 @@ public class User {
     private String username;
     private String password;
 
-    private List<Integer> following;
-    private List<Integer> followers;
+    private List<String> following;
+    private List<String> followers;
 
-    public User(int id, String firstName, String lastName, String username, String password, String email,
-                String address, String phoneNo, List<Integer> following, List<Integer> followers) {
+    public User(String id, String firstName, String lastName, String username, String password, String email,
+                String address, String phoneNo, List<String> following, List<String> followers) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -32,11 +32,11 @@ public class User {
         this.followers = followers;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -96,19 +96,19 @@ public class User {
         this.phoneNo = phoneNo;
     }
 
-    public List<Integer> getFollowing() {
+    public List<String> getFollowing() {
         return following;
     }
 
-    public void setFollowing(List<Integer> following) {
+    public void setFollowing(List<String> following) {
         this.following = following;
     }
 
-    public List<Integer> getFollowers() {
+    public List<String> getFollowers() {
         return followers;
     }
 
-    public void setFollowers(List<Integer> followers) {
+    public void setFollowers(List<String> followers) {
         this.followers = followers;
     }
 }

@@ -1,20 +1,32 @@
 package com.sszabo.life_tok.ui.login;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.sszabo.life_tok.R;
+import com.sszabo.life_tok.util.FirebaseUtil;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private static final String TAG = LoginActivity.class.getSimpleName();
+
+    private String email;
+    private String password;
 
     private EditText txtEmail;
     private EditText txtPassword;
@@ -35,11 +47,35 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btn_login);
         btnSignUp = findViewById(R.id.btn_sign_up);
         progressBarLogin = findViewById(R.id.progress_bar);
+        progressBarLogin.setVisibility(View.INVISIBLE);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!setAndVerifyFields()) {
+                    Toast.makeText(LoginActivity.this, "Invalid credentials!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 // TODO perform authentication login
+                progressBarLogin.setVisibility(View.VISIBLE);
+
+                FirebaseUtil.getAuth().signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                progressBarLogin.setVisibility(View.INVISIBLE);
+
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "onComplete: Login success");
+                                    finish();
+                                } else {
+                                    Log.d(TAG, "onComplete: Login failed");
+                                    Toast.makeText(LoginActivity.this, "Invalid credentials",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
             }
         });
 
@@ -54,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
         chkShowPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // show  or hide password
                 if (chkShowPassword.isChecked()) {
                     txtPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
                 } else {
@@ -63,4 +100,27 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Verifies all User registration fields
+     *
+     * @return
+     */
+    private boolean setAndVerifyFields() {
+        boolean valid = true;
+
+        email = txtEmail.getText().toString();
+        password = txtPassword.getText().toString();
+
+        if (email.isEmpty()) {
+            valid = false;
+            txtEmail.setError("Required field");
+        }
+
+        if (password.isEmpty()) {
+            valid = false;
+            txtPassword.setError("Required field");
+        }
+
+        return valid;
+    }
 }
