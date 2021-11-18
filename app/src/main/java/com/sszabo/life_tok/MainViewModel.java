@@ -8,7 +8,6 @@ public class MainViewModel extends ViewModel {
     private boolean isLoggingIn;
 
     public MainViewModel() {
-        // TODO change to false if want login
         isLoggingIn = false;
     }
 

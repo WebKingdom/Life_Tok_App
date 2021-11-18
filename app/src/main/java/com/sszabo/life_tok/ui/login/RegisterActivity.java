@@ -12,19 +12,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.DocumentReference;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,9 +74,9 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                // TODO create account on database
                 progressBarRegister.setVisibility(View.VISIBLE);
 
+                // create account on both databases (auth and Firestore)
                 FirebaseAuth fAuth = FirebaseUtil.getAuth();
                 fAuth.createUserWithEmailAndPassword(
                         email,
@@ -86,30 +84,17 @@ public class RegisterActivity extends AppCompatActivity {
                 ).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBarRegister.setVisibility(View.INVISIBLE);
-
                         // check if user created successfully
                         if (task.isSuccessful()) {
-                            // store additional fields in Firebase
-//                            String uid = null;
-
-                            FirebaseUser fUser = fAuth.getCurrentUser();
-//                            try {
-//                                uid = fUser.getUid();
-//                            } catch (NullPointerException e) {
-//                                //
-//                                Toast.makeText(RegisterActivity.this, "Failed. User ID null pointer",
-//                                        Toast.LENGTH_LONG).show();
-//                                e.printStackTrace();
-//                                return;
-//                            }
+                            // store additional user fields in Firebase
+                            FirebaseUser currentUser = fAuth.getCurrentUser();
+                            Log.d(TAG, "onComplete: User auth added with ID: " + currentUser.getUid());
 
                             User user = new User(
-                                    fUser.getUid(),
+                                    currentUser.getUid(),
                                     firstName,
                                     lastName,
                                     username,
-                                    password,
                                     email,
                                     address,
                                     phone,
@@ -117,43 +102,46 @@ public class RegisterActivity extends AppCompatActivity {
                                     new ArrayList<>(0)
                             );
 
+                            // update username of in authentication db
                             UserProfileChangeRequest updates = new UserProfileChangeRequest
                                     .Builder()
                                     .setDisplayName(username)
                                     .build();
-                            fUser.updateProfile(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            currentUser.updateProfile(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful())
-                                        Log.d(TAG, "onComplete: User profile updated");
+                                        Log.d(TAG, "onComplete: User profile username now: " + username);
                                 }
                             });
 
+                            // Add the user to Firestore db
                             FirebaseUtil.getFirestore().collection("users")
-                                    .add(user)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    .document(user.getId())
+                                    .set(user)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            Toast.makeText(RegisterActivity.this, "Success",
-                                                    Toast.LENGTH_SHORT).show();
-                                            Log.d(TAG, "onSuccess: User added with ID: " + user.getId());
-                                            finish();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(RegisterActivity.this,
-                                                    "Failed to add user to 'users' collection",
-                                                    Toast.LENGTH_SHORT).show();
-                                            Log.d(TAG, "onFailure: Failed to add user with ID: " + user.getId());
-                                            e.printStackTrace();
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(RegisterActivity.this, "Success",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.d(TAG, "onSuccess: User added with ID: " + user.getId() +
+                                                        " result: " + task.getResult());
+                                            } else {
+                                                Toast.makeText(RegisterActivity.this,
+                                                        "Failed to user add to Firestore",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.d(TAG, "onFailure: Failed to add user to Firestore with ID: "
+                                                        + user.getId());
+                                                task.getException().printStackTrace();
+                                            }
                                         }
                                     });
 
-                            // TODO is this how you would access data inside followers?
-                            //  FirebaseUtil.getFirestore().collection("users").document(uid).collection("followers").get();
+                            progressBarRegister.setVisibility(View.INVISIBLE);
+                            finish();
                         } else {
+                            progressBarRegister.setVisibility(View.INVISIBLE);
                             Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
@@ -163,7 +151,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     /**
-     * Verifies all User registration fields
+     * Sets and verifies all user registration fields
      *
      * @return
      */

@@ -53,11 +53,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!setAndVerifyFields()) {
-                    Toast.makeText(LoginActivity.this, "Invalid credentials!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "Invalid credentials", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                // TODO perform authentication login
+                // Perform authentication login
                 progressBarLogin.setVisibility(View.VISIBLE);
 
                 FirebaseUtil.getAuth().signInWithEmailAndPassword(email, password)
@@ -67,12 +67,14 @@ public class LoginActivity extends AppCompatActivity {
                                 progressBarLogin.setVisibility(View.INVISIBLE);
 
                                 if (task.isSuccessful()) {
+                                    Toast.makeText(LoginActivity.this, "Logging in",
+                                            Toast.LENGTH_LONG).show();
                                     Log.d(TAG, "onComplete: Login success");
                                     finish();
                                 } else {
-                                    Log.d(TAG, "onComplete: Login failed");
                                     Toast.makeText(LoginActivity.this, "Invalid credentials",
                                             Toast.LENGTH_LONG).show();
+                                    Log.d(TAG, "onComplete: Login failed");
                                 }
                             }
                         });
@@ -82,6 +84,8 @@ public class LoginActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: Starting Register Activity.");
+
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }

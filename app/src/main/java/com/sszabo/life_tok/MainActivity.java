@@ -65,16 +65,14 @@ public class MainActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = FirebaseUtil.getAuth().getCurrentUser();
-                if (user != null) {
+                mCurrentUser = FirebaseUtil.getAuth().getCurrentUser();
+                if (mCurrentUser != null) {
                     // user is signed in
-                    mCurrentUser = user;
                     Log.d(TAG, "onAuthStateChanged: User ID: " + mCurrentUser.getUid());
                 } else {
-                    Log.d(TAG, "onAuthStateChanged: No user received");
-                    // restart main activity
-                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    Log.d(TAG, "onAuthStateChanged: user == null, starting login for result");
+                    // restart login activity
+                    openLoginActivityForResult();
                 }
             }
         };
@@ -89,8 +87,9 @@ public class MainActivity extends AppCompatActivity {
                         
                         mViewModel.setIsLoggingIn(false);
                         Intent data = result.getData();
+                        int res = result.getResultCode();
 
-                        if (result.getResultCode() != Activity.RESULT_OK && shouldStartLogin()) {
+                        if (res != Activity.RESULT_OK || shouldStartLogin()) {
                             // start login activity again if not logged in (no request codes)
                             Log.d(TAG, "onActivityResult: Bad results code and current user == null");
                             openLoginActivityForResult();
@@ -112,15 +111,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // TODO start listening to Firestore updates
-        mCurrentUser = FirebaseUtil.getAuth().getCurrentUser();
-//        mCurrentUser.startActivityForLinkWithProvider();
+        FirebaseUtil.getAuth().addAuthStateListener(mAuthListener);
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            FirebaseUtil.getAuth().removeAuthStateListener(mAuthListener);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        FirebaseUtil.getAuth().removeAuthStateListener(mAuthListener);
         FirebaseUtil.getAuth().signOut();
+        FirebaseUtil.getFirestore().terminate();
     }
 
     private boolean shouldStartLogin() {
@@ -128,26 +136,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openLoginActivityForResult() {
-        Intent intent = new Intent(this, LoginActivity.class);
         mViewModel.setIsLoggingIn(true);
+        Intent intent = new Intent(this, LoginActivity.class);
         loginActivityLauncher.launch(intent);
     }
-
-//    private void startLogin() {
-//        Intent intent = new Intent(this, LoginActivity.class);
-//        mViewModel.setIsLoggingIn(true);
-//        startActivity(intent);
-//    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == RC_LOGIN) {
-//            mViewModel.setIsLoggingIn(false);
-//
-//            if (resultCode != RESULT_OK && shouldStartLogin()) {
-//                startLogin();
-//            }
-//        }
-//    }
 }

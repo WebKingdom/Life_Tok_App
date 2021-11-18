@@ -43,6 +43,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
     private static final String TAG = MapFragment.class.getSimpleName();
 
     private static final float DEFAULT_ZOOM = 10;
+    private static final String MAP_VIEW = "MAP_VIEW";
+    private static final String GOOGLE_MAP = "GOOGLE_MAP";
+    private static final String FUSED_LOCATION = "FUSED_LOCATION";
+    private static final String GEOCODER = "GEOCODER";
 
     private MapViewModel mapViewModel;
     private FragmentMapBinding binding;
@@ -61,16 +65,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final SearchView searchView = root.findViewById(R.id.searchViewMap);
+        SearchView searchView = root.findViewById(R.id.searchViewMap);
         mapViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 searchView.getQuery();
+
             }
         });
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
-        geocoder = new Geocoder(this.getContext());
+        if (savedInstanceState != null) {
+            // TODO? load data from save
+        }
+
         currentLocation = null;
 
         mMapView = root.findViewById(R.id.mapView);
@@ -94,12 +101,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        // TODO save state
+        // TODO? save state
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
+        geocoder = new Geocoder(this.getContext());
         mMapView.onStart();
     }
 
@@ -127,6 +136,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         mMapView.onDestroy();
         binding = null;
     }
+
 
     @Override
     public void onLowMemory() {

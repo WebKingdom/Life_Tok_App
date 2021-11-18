@@ -14,7 +14,7 @@
     <ScrollView
         android:id="@+id/scrollView0"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/linearLayout1"
@@ -45,6 +45,7 @@
                 android:inputType="text"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textColor="@color/white"
                 android:textColorHint="@color/grey"
                 android:textSize="20sp" />
 
@@ -60,6 +61,7 @@
                 android:inputType="text"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textColor="@color/white"
                 android:textColorHint="@color/grey"
                 android:textSize="20sp" />
 
@@ -76,6 +78,7 @@
                 android:inputType="number"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textColor="@color/white"
                 android:textColorHint="@color/grey"
                 android:textSize="20sp"
                 tools:ignore="TextFields" />
@@ -92,6 +95,7 @@
                 android:inputType="text"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textColor="@color/white"
                 android:textColorHint="@color/grey"
                 android:textSize="20sp" />
 
@@ -107,6 +111,7 @@
                 android:inputType="text"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textColor="@color/white"
                 android:textColorHint="@color/grey"
                 android:textSize="20sp" />
 
@@ -122,6 +127,7 @@
                 android:inputType="textEmailAddress"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textColor="@color/white"
                 android:textColorHint="@color/grey"
                 android:textSize="20sp" />
 
@@ -137,6 +143,7 @@
                 android:inputType="textPassword"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textColor="@color/white"
                 android:textColorHint="@color/grey"
                 android:textSize="20sp" />
 
@@ -152,6 +159,7 @@
                 android:inputType="textPassword"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textColor="@color/white"
                 android:textColorHint="@color/grey"
                 android:textSize="20sp" />
 

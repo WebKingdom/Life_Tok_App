@@ -19,8 +19,7 @@ public class MapViewModel extends ViewModel {
 
     public MapViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is the maps fragment");
-
+        mText.setValue("Search");
     }
 
     public LiveData<String> getText() {
