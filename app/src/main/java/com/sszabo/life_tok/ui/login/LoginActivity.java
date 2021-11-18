@@ -70,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(LoginActivity.this, "Logging in",
                                             Toast.LENGTH_LONG).show();
                                     Log.d(TAG, "onComplete: Login success");
+                                    setResult(RESULT_OK);
                                     finish();
                                 } else {
                                     Toast.makeText(LoginActivity.this, "Invalid credentials",

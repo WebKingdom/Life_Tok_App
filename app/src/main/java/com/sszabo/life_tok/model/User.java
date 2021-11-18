@@ -17,6 +17,18 @@ public class User {
     private List<String> following;
     private List<String> followers;
 
+    /**
+     * Populated constructor
+     * @param id
+     * @param firstName
+     * @param lastName
+     * @param username
+     * @param email
+     * @param address
+     * @param phoneNo
+     * @param following
+     * @param followers
+     */
     public User(String id, String firstName, String lastName, String username, String email,
                 String address, String phoneNo, List<String> following, List<String> followers) {
         this.id = id;
@@ -28,6 +40,13 @@ public class User {
         this.phoneNo = phoneNo;
         this.following = following;
         this.followers = followers;
+    }
+
+    /**
+     * Empty constructor
+     */
+    public User() {
+
     }
 
     public String getId() {

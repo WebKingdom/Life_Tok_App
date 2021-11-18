@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private MainViewModel mViewModel;
     private ActivityResultLauncher<Intent> loginActivityLauncher;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser mCurrentUser;
 
     @Override
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         // Create authentication listener
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+        FirebaseUtil.setAuthListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 mCurrentUser = FirebaseUtil.getAuth().getCurrentUser();
@@ -72,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "onAuthStateChanged: user == null, starting login for result");
                     // restart login activity
-                    openLoginActivityForResult();
+                    onRestart();
                 }
             }
-        };
+        });
 
         // login activity launcher
         loginActivityLauncher = registerForActivityResult(
@@ -89,10 +88,10 @@ public class MainActivity extends AppCompatActivity {
                         Intent data = result.getData();
                         int res = result.getResultCode();
 
-                        if (res != Activity.RESULT_OK || shouldStartLogin()) {
+                        if (res != Activity.RESULT_OK && shouldStartLogin()) {
                             // start login activity again if not logged in (no request codes)
                             Log.d(TAG, "onActivityResult: Bad results code and current user == null");
-                            openLoginActivityForResult();
+                            onRestart();
                         }
                     }
                 }
@@ -111,22 +110,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // TODO start listening to Firestore updates
-        FirebaseUtil.getAuth().addAuthStateListener(mAuthListener);
-
+        FirebaseUtil.addAuthListener();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            FirebaseUtil.getAuth().removeAuthStateListener(mAuthListener);
-        }
+        FirebaseUtil.removeAuthListener();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        FirebaseUtil.getAuth().removeAuthStateListener(mAuthListener);
+        FirebaseUtil.removeAuthListener();
         FirebaseUtil.getAuth().signOut();
         FirebaseUtil.getFirestore().terminate();
     }

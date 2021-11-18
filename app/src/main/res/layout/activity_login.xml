@@ -72,7 +72,7 @@
                 android:layout_marginEnd="70dp"
                 android:layout_marginBottom="20dp"
                 android:buttonTint="@android:color/white"
-                android:text="@string/action_show_password"
+                android:text="@string/show_password"
                 android:textColor="@android:color/white" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:background="@color/royal_blue"
-                android:text="@string/action_login"
+                android:text="@string/login"
                 android:textColor="@color/white"
                 android:textSize="25sp" />
 
@@ -91,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@color/royal_blue"
-                android:text="@string/action_sign_up"
+                android:text="@string/sign_up"
                 android:textColor="@color/white"
                 android:textSize="25sp" />
 

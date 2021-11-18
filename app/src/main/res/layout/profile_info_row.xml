@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/profilePicture"
+            android:id="@+id/profileImageView"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:contentDescription="@string/title_profile"
@@ -32,7 +32,6 @@
         android:id="@+id/txt_username"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="20dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
@@ -43,26 +42,54 @@
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/txtFollowers"
+        app:layout_constraintBottom_toTopOf="@+id/txtNumFollowers"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/profileCardView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtFollowers"
+        android:id="@+id/txtNumFollowers"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/txtFollowers"
+        app:layout_constraintEnd_toStartOf="@+id/txtNumFollowing"
+        app:layout_constraintStart_toStartOf="@+id/txt_username"
+        app:layout_constraintTop_toBottomOf="@+id/txt_username" />
+
+    <TextView
+        android:id="@+id/txtFollowers"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:gravity="center"
-        android:hint="@string/followers"
+        android:text="@string/followers"
+        android:textSize="16sp"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/txtFollowing"
         app:layout_constraintStart_toStartOf="@+id/txt_username"
-        app:layout_constraintTop_toBottomOf="@id/txt_username" />
+        app:layout_constraintTop_toBottomOf="@id/txtNumFollowers" />
+
+    <TextView
+        android:id="@+id/txtNumFollowing"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/txtNumFollowers"
+        app:layout_constraintTop_toTopOf="@id/txtNumFollowers"
+        app:layout_constraintStart_toEndOf="@+id/txtNumFollowers"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/txtFollowing"
@@ -72,7 +99,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:gravity="center"
-        android:hint="@string/following"
+        android:textSize="16sp"
+        android:text="@string/following"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"

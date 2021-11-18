@@ -5,12 +5,6 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_home">
 
-<!--    <fragment-->
-<!--        android:id="@+id/navigation_login"-->
-<!--        android:name="com.sszabo.life_tok.ui.login.LoginFragment"-->
-<!--        android:label="@string/title_login"-->
-<!--        tools:layout="@layout/activity_login" />-->
-
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.sszabo.life_tok.ui.home.HomeFragment"
