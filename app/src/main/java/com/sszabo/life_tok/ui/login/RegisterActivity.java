@@ -1,5 +1,6 @@
 package com.sszabo.life_tok.ui.login;
 
+import android.media.MediaRouter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +17,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firestore.v1.CreateDocumentRequest;
+import com.google.firestore.v1.UpdateDocumentRequest;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
@@ -66,6 +70,13 @@ public class RegisterActivity extends AppCompatActivity {
         progressBarRegister = findViewById(R.id.progress_bar);
         progressBarRegister.setVisibility(View.INVISIBLE);
 
+        setUIListeners();
+    }
+
+    /**
+     * Sets the listeners for the UI
+     */
+    private void setUIListeners() {
         btnCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,78 +85,86 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                progressBarRegister.setVisibility(View.VISIBLE);
-
                 // create account on both databases (auth and Firestore)
-                FirebaseAuth fAuth = FirebaseUtil.getAuth();
-                fAuth.createUserWithEmailAndPassword(
-                        email,
-                        password
-                ).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        // check if user created successfully
-                        if (task.isSuccessful()) {
-                            // store additional user fields in Firebase
-                            FirebaseUser currentUser = fAuth.getCurrentUser();
-                            Log.d(TAG, "onComplete: User auth added with ID: " + currentUser.getUid());
+                progressBarRegister.setVisibility(View.VISIBLE);
+                registerUser();
+                progressBarRegister.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
 
-                            User user = new User(
-                                    currentUser.getUid(),
-                                    firstName,
-                                    lastName,
-                                    username,
-                                    email,
-                                    address,
-                                    phone,
-                                    new ArrayList<>(0),
-                                    new ArrayList<>(0)
-                            );
+    /**
+     * Registers the user with email and password on Firebase authentication and Firestore DB
+     */
+    private void registerUser() {
+        FirebaseAuth fAuth = FirebaseUtil.getAuth();
 
-                            // update username of in authentication db
-                            UserProfileChangeRequest updates = new UserProfileChangeRequest
-                                    .Builder()
-                                    .setDisplayName(username)
-                                    .build();
-                            currentUser.updateProfile(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+        fAuth.createUserWithEmailAndPassword(
+                email,
+                password
+        ).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                // check if user created successfully
+                if (task.isSuccessful()) {
+                    // store additional user fields in Firebase
+                    FirebaseUser currentUser = fAuth.getCurrentUser();
+                    Log.d(TAG, "onComplete: User auth added with ID: " + currentUser.getUid());
+
+                    User user = new User(
+                            currentUser.getUid(),
+                            firstName,
+                            lastName,
+                            address,
+                            phone,
+                            new ArrayList<>(0),
+                            new ArrayList<>(0)
+                    );
+
+                    // update username of in authentication db
+                    UserProfileChangeRequest updates = new UserProfileChangeRequest
+                            .Builder()
+                            .setDisplayName(username)
+                            .build();
+                    currentUser.updateProfile(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "onComplete: Updated user profile username: " + username);
+                            } else {
+                                Log.d(TAG, "onComplete: Failed to update profile username: " + username);
+                            }
+                        }
+                    });
+
+                    // Add the user to Firestore db
+                    FirebaseUtil.getFirestore().collection("users")
+                            .document(user.getId())
+                            .set(user)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful())
-                                        Log.d(TAG, "onComplete: User profile username now: " + username);
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(RegisterActivity.this, "Success",
+                                                Toast.LENGTH_SHORT).show();
+                                        Log.d(TAG, "onSuccess: User added with ID: " + user.getId() +
+                                                " result: " + task.getResult());
+                                        setResult(RESULT_OK);
+                                        progressBarRegister.setVisibility(View.INVISIBLE);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(RegisterActivity.this,
+                                                "Failed to add user to Firestore",
+                                                Toast.LENGTH_SHORT).show();
+                                        Log.d(TAG, "onFailure: Failed to add user to Firestore with ID: "
+                                                + user.getId());
+                                        task.getException().printStackTrace();
+                                    }
                                 }
                             });
-
-                            // Add the user to Firestore db
-                            FirebaseUtil.getFirestore().collection("users")
-                                    .document(user.getId())
-                                    .set(user)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Toast.makeText(RegisterActivity.this, "Success",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.d(TAG, "onSuccess: User added with ID: " + user.getId() +
-                                                        " result: " + task.getResult());
-                                            } else {
-                                                Toast.makeText(RegisterActivity.this,
-                                                        "Failed to user add to Firestore",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.d(TAG, "onFailure: Failed to add user to Firestore with ID: "
-                                                        + user.getId());
-                                                task.getException().printStackTrace();
-                                            }
-                                        }
-                                    });
-
-                            progressBarRegister.setVisibility(View.INVISIBLE);
-                            finish();
-                        } else {
-                            progressBarRegister.setVisibility(View.INVISIBLE);
-                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+                } else {
+                    Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

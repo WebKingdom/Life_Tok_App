@@ -92,7 +92,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
             usernameText = itemView.findViewById(R.id.txt_username);
             numFollowersText = itemView.findViewById(R.id.txtNumFollowers);
             numFollowingText = itemView.findViewById(R.id.txtNumFollowing);
-
         }
     }
 }

@@ -18,7 +18,7 @@ public class User {
     private List<String> followers;
 
     /**
-     * Populated constructor
+     * Fully Populated constructor
      * @param id
      * @param firstName
      * @param lastName
@@ -36,6 +36,27 @@ public class User {
         this.lastName = lastName;
         this.username = username;
         this.email = email;
+        this.address = address;
+        this.phoneNo = phoneNo;
+        this.following = following;
+        this.followers = followers;
+    }
+
+    /**
+     * No Username and Email constructor for Firestore DB
+     * @param id
+     * @param firstName
+     * @param lastName
+     * @param address
+     * @param phoneNo
+     * @param following
+     * @param followers
+     */
+    public User(String id, String firstName, String lastName, String address, String phoneNo,
+                List<String> following, List<String> followers) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.address = address;
         this.phoneNo = phoneNo;
         this.following = following;

@@ -3,7 +3,6 @@ package com.sszabo.life_tok.util;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.sszabo.life_tok.MainActivity;
 
 public class FirebaseUtil {
     // if debugging use emulator
@@ -13,7 +12,7 @@ public class FirebaseUtil {
     private static FirebaseAuth mAuth;
     private static AuthUI mAuthUI;
 
-    private static FirebaseAuth.AuthStateListener authListener;
+    private static FirebaseAuth.AuthStateListener mAuthListener;
 
     public static FirebaseFirestore getFirestore() {
         if (mFirestore == null) {
@@ -58,20 +57,20 @@ public class FirebaseUtil {
     }
 
     public static FirebaseAuth.AuthStateListener getAuthListener() {
-        return authListener;
+        return mAuthListener;
     }
 
     public static void setAuthListener(FirebaseAuth.AuthStateListener authListener) {
-        FirebaseUtil.authListener = authListener;
+        mAuthListener = authListener;
     }
 
     public static void addAuthListener() {
-        mAuth.addAuthStateListener(authListener);
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     public static void removeAuthListener() {
         if (mAuth != null) {
-            mAuth.removeAuthStateListener(authListener);
+            mAuth.removeAuthStateListener(mAuthListener);
         }
     }
 
@@ -80,9 +79,9 @@ public class FirebaseUtil {
             mFirestore.terminate();
         }
         if (mAuth != null) {
-            mAuth.removeAuthStateListener(authListener);
             mAuth.signOut();
         }
+        mAuth = null;
         mFirestore = null;
         mAuthUI = null;
     }

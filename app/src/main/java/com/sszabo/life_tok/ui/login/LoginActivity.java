@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.sszabo.life_tok.MainActivity;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
@@ -49,6 +50,13 @@ public class LoginActivity extends AppCompatActivity {
         progressBarLogin = findViewById(R.id.progress_bar);
         progressBarLogin.setVisibility(View.INVISIBLE);
 
+        setUIListeners();
+    }
+
+    /**
+     * Sets the listeners for the UI
+     */
+    private void setUIListeners() {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,26 +67,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 // Perform authentication login
                 progressBarLogin.setVisibility(View.VISIBLE);
-
-                FirebaseUtil.getAuth().signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBarLogin.setVisibility(View.INVISIBLE);
-
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(LoginActivity.this, "Logging in",
-                                            Toast.LENGTH_LONG).show();
-                                    Log.d(TAG, "onComplete: Login success");
-                                    setResult(RESULT_OK);
-                                    finish();
-                                } else {
-                                    Toast.makeText(LoginActivity.this, "Invalid credentials",
-                                            Toast.LENGTH_LONG).show();
-                                    Log.d(TAG, "onComplete: Login failed");
-                                }
-                            }
-                        });
+                performSignIn();
             }
         });
 
@@ -86,9 +75,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: Starting Register Activity.");
-
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
+                launchRegisterActivity();
             }
         });
 
@@ -106,9 +93,50 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Verifies all User registration fields
+     * Tries to sign in with email and password, launching main activity if successful
+     */
+    private void performSignIn() {
+        FirebaseUtil.getAuth().signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressBarLogin.setVisibility(View.INVISIBLE);
+
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Logging in",
+                                    Toast.LENGTH_LONG).show();
+                            Log.d(TAG, "onComplete: Login success");
+                            launchMainActivity();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Invalid credentials",
+                                    Toast.LENGTH_LONG).show();
+                            Log.d(TAG, "onComplete: Login failed");
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Launches the register activity
+     */
+    private void launchRegisterActivity() {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Launches the main activity with a clear activity stack and email passed as extra
+     */
+    private void launchMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    /**
+     * Verifies and sets all user registration fields
      *
-     * @return
+     * @return true if all fields valid, false otherwise
      */
     private boolean setAndVerifyFields() {
         boolean valid = true;

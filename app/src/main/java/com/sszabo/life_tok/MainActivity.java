@@ -1,22 +1,13 @@
 package com.sszabo.life_tok;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -29,16 +20,12 @@ import com.sszabo.life_tok.databinding.ActivityMainBinding;
 import com.sszabo.life_tok.ui.login.LoginActivity;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
-import java.util.Collections;
-import java.util.concurrent.BlockingDeque;
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding binding;
     private MainViewModel mViewModel;
-    private ActivityResultLauncher<Intent> loginActivityLauncher;
     private FirebaseUser mCurrentUser;
 
     @Override
@@ -69,71 +56,34 @@ public class MainActivity extends AppCompatActivity {
                     // user is signed in
                     Log.d(TAG, "onAuthStateChanged: User ID: " + mCurrentUser.getUid());
                 } else {
-                    Log.d(TAG, "onAuthStateChanged: user == null, starting login for result");
-                    // restart login activity
-                    onRestart();
+                    Log.d(TAG, "onAuthStateChanged: user == null, launching login");
+                    launchLoginActivity();
                 }
             }
         });
-
-        // login activity launcher
-        loginActivityLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        Log.d(TAG, "onActivityResult: Getting login result");
-                        
-                        mViewModel.setIsLoggingIn(false);
-                        Intent data = result.getData();
-                        int res = result.getResultCode();
-
-                        if (res != Activity.RESULT_OK && shouldStartLogin()) {
-                            // start login activity again if not logged in (no request codes)
-                            Log.d(TAG, "onActivityResult: Bad results code and current user == null");
-                            onRestart();
-                        }
-                    }
-                }
-        );
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        if (shouldStartLogin()) {
-            Log.d(TAG, "onStart: Starting login for result");
+        if (FirebaseUtil.getAuth().getCurrentUser() == null) {
+            Log.d(TAG, "onStart: Starting login");
 
-            openLoginActivityForResult();
+            launchLoginActivity();
             return;
         }
 
-        // TODO start listening to Firestore updates
+        // TODO? start listening to Firestore updates
         FirebaseUtil.addAuthListener();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        FirebaseUtil.removeAuthListener();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        FirebaseUtil.removeAuthListener();
-        FirebaseUtil.getAuth().signOut();
-        FirebaseUtil.getFirestore().terminate();
-    }
-
-    private boolean shouldStartLogin() {
-        return (!mViewModel.getIsLoggingIn() && FirebaseUtil.getAuth().getCurrentUser() == null);
-    }
-
-    public void openLoginActivityForResult() {
-        mViewModel.setIsLoggingIn(true);
+    /**
+     * Opens login activity clearing all activities before it
+     */
+    public void launchLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
-        loginActivityLauncher.launch(intent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }

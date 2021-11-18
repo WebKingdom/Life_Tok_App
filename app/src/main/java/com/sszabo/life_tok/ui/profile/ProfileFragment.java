@@ -72,9 +72,10 @@ public class ProfileFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 // TODO navigate to screen
+
                 return true;
             case R.id.action_logout:
-                FirebaseUtil.resetFirebase();
+                FirebaseUtil.getAuth().signOut();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
