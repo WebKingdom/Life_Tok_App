@@ -3,12 +3,14 @@ package com.sszabo.life_tok.util;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
 public class FirebaseUtil {
     // if debugging use emulator
     private static final boolean debugEmulator = false;
 
     private static FirebaseFirestore mFirestore;
+    private static FirebaseStorage mStorage;
     private static FirebaseAuth mAuth;
     private static AuthUI mAuthUI;
 
@@ -40,6 +42,18 @@ public class FirebaseUtil {
         }
 
         return mAuth;
+    }
+
+    public static FirebaseStorage getStorage() {
+        if (mStorage == null) {
+            mStorage = FirebaseStorage.getInstance();
+
+            if (debugEmulator) {
+                mStorage.useEmulator("10.0.2.2", 8080);
+            }
+        }
+
+        return mStorage;
     }
 
     public static AuthUI getAuthUI() {
