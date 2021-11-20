@@ -10,7 +10,6 @@
         android:id="@+id/player_view_post"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +27,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txt_username"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
@@ -89,7 +88,7 @@
             app:layout_constraintVertical_bias=".9">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/container_profile"
+                android:id="@+id/profile_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toTopOf="@+id/image_view_option_like"
@@ -128,11 +127,11 @@
                 android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/container_profile"
+                app:layout_constraintTop_toBottomOf="@+id/profile_container"
                 app:srcCompat="@drawable/ic_heart_icon" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/image_view_option_like_title"
+                android:id="@+id/txt_option_like_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -154,11 +153,11 @@
                 android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/image_view_option_like_title"
+                app:layout_constraintTop_toBottomOf="@+id/txt_option_like_title"
                 app:srcCompat="@drawable/ic_message_icon" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/image_view_option_comment_title"
+                android:id="@+id/txt_option_comment_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"

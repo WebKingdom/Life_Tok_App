@@ -40,6 +40,9 @@ public class HomeFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
+        binding.txtPostDescription.setText("Post description goes here. More info to come soon better be ready!");
+        binding.txtPostLocation.setText("Ames, IA");
         return root;
     }
 
