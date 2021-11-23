@@ -10,6 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class LifeTokApplication extends Application {
-    ExecutorService executorService = Executors.newFixedThreadPool(4);
-    Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+    public ExecutorService executorService = Executors.newFixedThreadPool(4);
+    public Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
 }

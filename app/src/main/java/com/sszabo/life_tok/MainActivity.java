@@ -78,6 +78,13 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUtil.addAuthListener();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LifeTokApplication app = (LifeTokApplication) getApplication();
+        app.executorService.shutdown();
+    }
+
     /**
      * Opens login activity clearing all activities before it
      */
