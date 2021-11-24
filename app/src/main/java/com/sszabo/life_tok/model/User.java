@@ -14,8 +14,20 @@ public class User {
 
     private String username;
 
+    /**
+     * List of following user IDs
+     */
     private List<String> following;
+
+    /**
+     * List of follower user IDs
+     */
     private List<String> followers;
+
+    /**
+     * List of hosting event IDs
+     */
+    private List<String> events;
 
     /**
      * Fully Populated constructor

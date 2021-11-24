@@ -6,6 +6,7 @@ import com.google.firebase.firestore.GeoPoint;
 public class Event {
 
     private int id;
+    private int userId;
     private String name;
     private String description;
 
@@ -17,13 +18,20 @@ public class Event {
     private GeoPoint geoPoint;
     private Timestamp timestamp;
 
-    public Event(int id, String name, String description, int eventType, GeoPoint geoPoint, Timestamp timestamp) {
+    public Event(int id, int userId, String name, String description, int eventType, GeoPoint geoPoint, Timestamp timestamp) {
         this.id = id;
+        this.userId = userId;
         this.name = name;
         this.description = description;
         this.eventType = eventType;
         this.geoPoint = geoPoint;
         this.timestamp = timestamp;
+    }
+
+    /**
+     * Empty constructor
+     */
+    public Event() {
     }
 
     public int getId() {
@@ -32,6 +40,14 @@ public class Event {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getName() {
