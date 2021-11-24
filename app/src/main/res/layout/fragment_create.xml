@@ -28,10 +28,10 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_gravity="bottom"
+        android:background="@color/black"
         android:gravity="center"
         android:orientation="horizontal"
         android:weightSum="3"
-        android:background="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,6 +48,8 @@
                 android:id="@+id/btn_photo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusable="true"
                 android:src="@drawable/ic_outline_photo_camera_24" />
         </androidx.cardview.widget.CardView>
 
@@ -62,6 +64,8 @@
                 android:id="@+id/btn_video"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusable="true"
                 android:src="@drawable/ic_outline_videocam_24" />
         </androidx.cardview.widget.CardView>
 
@@ -76,6 +80,8 @@
                 android:id="@+id/btn_gallery"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusable="true"
                 android:src="@drawable/ic_outline_add_a_photo_24" />
         </androidx.cardview.widget.CardView>
 

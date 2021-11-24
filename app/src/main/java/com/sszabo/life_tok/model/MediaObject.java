@@ -3,21 +3,21 @@ package com.sszabo.life_tok.model;
 /**
  * The post video object that will be used to display in exoplayer
  */
-public class VideoObject {
+public class MediaObject {
 
     private String title;
     private String videoUrl;
     private String thumbnail;
     private String description;
 
-    public VideoObject(String title, String videoUrl, String thumbnail, String description) {
+    public MediaObject(String title, String videoUrl, String thumbnail, String description) {
         this.title = title;
         this.videoUrl = videoUrl;
         this.thumbnail = thumbnail;
         this.description = description;
     }
 
-    public VideoObject() {
+    public MediaObject() {
     }
 
     public String getTitle() {

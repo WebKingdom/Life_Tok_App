@@ -2,6 +2,7 @@ package com.sszabo.life_tok;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
