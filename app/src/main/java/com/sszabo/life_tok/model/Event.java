@@ -6,9 +6,9 @@ import com.google.firebase.firestore.GeoPoint;
 public class Event {
 
     private int id;
-    private int userId;
     private String name;
     private String description;
+    private String mediaUrl;
 
     /**
      * Public (1) or private (0) event
@@ -18,11 +18,20 @@ public class Event {
     private GeoPoint geoPoint;
     private Timestamp timestamp;
 
-    public Event(int id, int userId, String name, String description, int eventType, GeoPoint geoPoint, Timestamp timestamp) {
+    public Event(int id, String name, String description, String mediaUrl, int eventType, GeoPoint geoPoint, Timestamp timestamp) {
         this.id = id;
-        this.userId = userId;
         this.name = name;
         this.description = description;
+        this.mediaUrl = mediaUrl;
+        this.eventType = eventType;
+        this.geoPoint = geoPoint;
+        this.timestamp = timestamp;
+    }
+
+    public Event(String name, String description, String mediaUrl, int eventType, GeoPoint geoPoint, Timestamp timestamp) {
+        this.name = name;
+        this.description = description;
+        this.mediaUrl = mediaUrl;
         this.eventType = eventType;
         this.geoPoint = geoPoint;
         this.timestamp = timestamp;
@@ -42,14 +51,6 @@ public class Event {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
     public String getName() {
         return name;
     }
@@ -64,6 +65,14 @@ public class Event {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
+    public void setMediaUrl(String mediaUrl) {
+        this.mediaUrl = mediaUrl;
     }
 
     public int getEventType() {

@@ -3,6 +3,7 @@ package com.sszabo.life_tok.ui.create;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,12 +28,18 @@ import androidx.camera.core.Preview;
 import androidx.camera.core.VideoCapture;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentCreateBinding;
 
 import java.io.File;
@@ -92,6 +99,7 @@ public class CreateFragment extends Fragment {
                             // TODO take photo or video
                             Log.d(TAG, "onActivityResult: All permissions granted");
                         } else {
+                            Toast.makeText(getContext(), "Must enable permission for functionality", Toast.LENGTH_LONG).show();
                             onPause();
                             onStop();
                         }
@@ -203,6 +211,16 @@ public class CreateFragment extends Fragment {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         Log.d(TAG, "onImageSaved: Saved to: " + filePath);
+
+                        // TODO launch event creation fragment
+                        NavHostFragment.findNavController(CreateFragment.this)
+                                .navigate(R.id.action_navigation_create_to_navigation_post,
+                                        null,
+                                        new NavOptions.Builder()
+                                                .setEnterAnim(android.R.animator.fade_in)
+                                                .setExitAnim(android.R.animator.fade_out)
+                                                .build());
+
 //                        Toast.makeText(getContext(), "Saved to: " + filePath, Toast.LENGTH_SHORT).show();
                     }
 
@@ -235,6 +253,8 @@ public class CreateFragment extends Fragment {
                     @Override
                     public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
                         Log.d(TAG, "onVideoSaved: Saved to: " + filePath);
+                        // TODO launch event creation fragment
+
 //                        Toast.makeText(getContext(), "Saved to: " + filePath, Toast.LENGTH_SHORT).show();
                     }
 

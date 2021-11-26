@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin = findViewById(R.id.btn_login);
         btnSignUp = findViewById(R.id.btn_sign_up);
-        progressBarLogin = findViewById(R.id.progress_bar);
+        progressBarLogin = findViewById(R.id.progress_bar_login);
         progressBarLogin.setVisibility(View.INVISIBLE);
 
         setUIListeners();

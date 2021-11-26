@@ -1,6 +1,5 @@
 package com.sszabo.life_tok.ui.login;
 
-import android.media.MediaRouter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,16 +16,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firestore.v1.CreateDocumentRequest;
-import com.google.firestore.v1.UpdateDocumentRequest;
+import com.google.firebase.firestore.DocumentReference;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
+import com.sszabo.life_tok.util.Resources;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,7 +64,7 @@ public class RegisterActivity extends AppCompatActivity {
         txtPassword = findViewById(R.id.txt_password);
         txtConfirmPassword = findViewById(R.id.txt_confirm_password);
         btnCreateAccount = findViewById(R.id.btn_create_account);
-        progressBarRegister = findViewById(R.id.progress_bar);
+        progressBarRegister = findViewById(R.id.progress_bar_register);
         progressBarRegister.setVisibility(View.INVISIBLE);
 
         setUIListeners();
@@ -115,6 +112,8 @@ public class RegisterActivity extends AppCompatActivity {
                             currentUser.getUid(),
                             firstName,
                             lastName,
+                            username,
+                            email,
                             address,
                             phone,
                             new ArrayList<>(0),
@@ -162,6 +161,27 @@ public class RegisterActivity extends AppCompatActivity {
                                     }
                                 }
                             });
+
+                    // TODO create dummy event collection DELETE LATER?
+                    FirebaseUtil.getFirestore().collection("users")
+                            .document(user.getId())
+                            .collection("events")
+                            .add(Resources.EVENT_OBJECTS[0])
+                            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentReference> task) {
+                                    if (task.isSuccessful()) {
+
+                                    } else {
+                                        Toast.makeText(RegisterActivity.this,
+                                                "Failed to add event collection to Firestore",
+                                                Toast.LENGTH_SHORT).show();
+                                        Log.d(TAG, "onFailure: Failed to add event collection to Firestore");
+                                        task.getException().printStackTrace();
+                                    }
+                                }
+                            });
+
                 } else {
                     Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 }

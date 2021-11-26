@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -33,6 +37,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentMapBinding;
 
+import java.util.Map;
+
 public class MapFragment extends Fragment implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final String TAG = MapFragment.class.getSimpleName();
@@ -51,6 +57,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Geocoder geocoder;
+
+    private ActivityResultLauncher<String[]> activityResultLauncher;
 
     @Nullable
     @Override
@@ -73,8 +81,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
             // TODO? load data from save
         }
 
-        currentLocation = null;
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
+                new ActivityResultCallback<Map<String, Boolean>>() {
+                    @Override
+                    public void onActivityResult(Map<String, Boolean> result) {
+                        boolean allGranted = true;
 
+                        for (boolean b : result.values()) {
+                            allGranted = allGranted && b;
+                        }
+
+                        if (allGranted) {
+                            Log.d(TAG, "onActivityResult: All permissions granted");
+                        } else {
+                            Toast.makeText(getContext(), "Must enable permissions for functionality", Toast.LENGTH_LONG).show();
+                            onPause();
+                            onStop();
+                        }
+                    }
+                });
+
+        currentLocation = null;
         mMapView = root.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 
@@ -95,8 +122,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
         // TODO? save state
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -132,7 +160,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         binding = null;
     }
 
-
     @Override
     public void onLowMemory() {
         super.onLowMemory();
@@ -143,12 +170,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
-        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "onMapReady: Location permission denied/unavailable, requesting access.");
-            ActivityCompat.requestPermissions(this.getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }
+        String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION};
 
-        mGoogleMap.setMyLocationEnabled(true);
+        activityResultLauncher.launch(permissions);
+
+        for (String permission : permissions) {
+            if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                // permission not granted, return
+                return;
+            }
+        }
 
         fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
             @Override
@@ -167,26 +199,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                 }
             }
         });
+
+        mGoogleMap.setMyLocationEnabled(true);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-            case 1: {
-                if (grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    if ((ContextCompat.checkSelfPermission(MapFragment.this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) &&
-                            (ContextCompat.checkSelfPermission(MapFragment.this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-
-                        Toast.makeText(this.getContext(), "Permission Granted", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "onRequestPermissionsResult: Permission granted");
-                    }
-                } else {
-                    Toast.makeText(this.getContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "onRequestPermissionsResult: Permission denied");
-                }
-            }
-        }
+    private void getFollowingEventLocations() {
+        // TODO mark all events on map for people you follow
     }
 }

@@ -1,17 +1,27 @@
 package com.sszabo.life_tok.util;
 
+import android.os.SystemClock;
+
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.GeoPoint;
+import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.model.MediaObject;
 
-public class Resources {
-    public static final MediaObject[] MEDIA_OBJECTS = {
-            new MediaObject("Video 1 title",
-                    "gs://life-tok-app.appspot.com/Call of Duty  Black Ops Cold War 2021.05.10 - 13.49.56.02.DVR.mp4",
-                    "Video 1 thumbnail",
-                    "Video 1 description"),
-            new MediaObject("Video 2 title",
-                    "gs://life-tok-app.appspot.com/Call of Duty  Black Ops Cold War 2021.05.30 - 13.55.28.02.DVR.mp4",
-                    "Video 2 thumbnail",
-                    "Video 2 description")
-    };
+import java.util.Date;
 
+public class Resources {
+    public static final Event[] EVENT_OBJECTS = {
+            new Event("Event 1 name",
+                    "Event 1 description",
+                    "gs://life-tok-app.appspot.com/Call of Duty  Black Ops Cold War 2021.05.10 - 13.49.56.02.DVR.mp4",
+                    1,
+                    new GeoPoint(0, 0),
+                    new Timestamp(100, 0)),
+            new Event("Event 2 name",
+                    "Event 2 description",
+                    "gs://life-tok-app.appspot.com/Call of Duty  Black Ops Cold War 2021.05.10 - 13.49.56.02.DVR.mp4",
+                    1,
+                    new GeoPoint(10, 10),
+                    new Timestamp(100, 0)),
+    };
 }

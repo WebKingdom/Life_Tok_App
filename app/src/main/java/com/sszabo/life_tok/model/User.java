@@ -25,11 +25,6 @@ public class User {
     private List<String> followers;
 
     /**
-     * List of hosting event IDs
-     */
-    private List<String> events;
-
-    /**
      * Fully Populated constructor
      * @param id
      * @param firstName

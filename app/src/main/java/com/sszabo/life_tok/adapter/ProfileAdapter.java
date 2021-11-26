@@ -15,7 +15,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
+import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
@@ -43,34 +45,45 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     // populate data into the item through holder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        User curUser = MainViewModel.getCurrentUser();
+
+        holder.usernameText.setText(curUser.getUsername());
+        holder.numFollowingText.setText(Integer.toString(curUser.getFollowing().size()));
+        holder.numFollowersText.setText(Integer.toString(curUser.getFollowers().size()));
+    }
+
+    private void getUserData(ViewHolder holder) {
         FirebaseUser fUser = FirebaseUtil.getAuth().getCurrentUser();
-        User curUser = new User();
-        curUser.setUsername(fUser.getDisplayName());
+        User curUser = MainViewModel.getCurrentUser();
 
         FirebaseUtil.getFirestore().collection("users").document(fUser.getUid()).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    try {
-                        DocumentSnapshot document = task.getResult();
-                        curUser.setFollowers((List<String>) document.get("followers"));
-                        curUser.setFollowing((List<String>) document.get("following"));
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            try {
+                                DocumentSnapshot document = task.getResult();
+                                curUser.setFollowers((List<String>) document.get("followers"));
+                                curUser.setFollowing((List<String>) document.get("following"));
 
-                        holder.usernameText.setText(curUser.getUsername());
-                        holder.numFollowingText.setText(Integer.toString(curUser.getFollowing().size()));
-                        holder.numFollowersText.setText(Integer.toString(curUser.getFollowers().size()));
-                    } catch (Exception e) {
-                        Toast.makeText(holder.itemView.getContext(), "User data found in DB but null",
-                                Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
+                                holder.usernameText.setText(curUser.getUsername());
+                                holder.numFollowingText.setText(Integer.toString(curUser.getFollowing().size()));
+                                holder.numFollowersText.setText(Integer.toString(curUser.getFollowers().size()));
+                            } catch (Exception e) {
+                                Toast.makeText(holder.itemView.getContext(), "User data found in DB but null",
+                                        Toast.LENGTH_LONG).show();
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(holder.itemView.getContext(), "Could not find user data in DB",
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
-                } else {
-                    Toast.makeText(holder.itemView.getContext(), "Could not find user data in DB",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+                });
+
+        FirebaseUtil.getFirestore().collection("users").document(fUser.getUid())
+                .collection("events")
+                .whereEqualTo("name", "Event 1 name");
     }
 
     @Override

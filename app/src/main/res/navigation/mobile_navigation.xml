@@ -21,12 +21,28 @@
         android:id="@+id/navigation_create"
         android:name="com.sszabo.life_tok.ui.create.CreateFragment"
         android:label="@string/title_create"
-        tools:layout="@layout/fragment_create" />
+        tools:layout="@layout/fragment_create">
+        <action
+            android:id="@+id/action_navigation_create_to_navigation_post"
+            app:destination="@id/navigation_post" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.sszabo.life_tok.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_post"
+        android:name="com.sszabo.life_tok.ui.post.PostFragment"
+        android:label="@string/title_post"
+        tools:layout="@layout/fragment_post">
+        <action
+            android:id="@+id/action_navigation_post_to_navigation_create"
+            app:destination="@id/navigation_create"
+            app:popUpTo="@id/navigation_create"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>

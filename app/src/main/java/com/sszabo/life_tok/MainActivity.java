@@ -17,6 +17,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.sszabo.life_tok.databinding.ActivityMainBinding;
 import com.sszabo.life_tok.ui.login.LoginActivity;
 import com.sszabo.life_tok.util.FirebaseUtil;
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private MainViewModel mViewModel;
-    private FirebaseUser mCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +52,12 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUtil.setAuthListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                mCurrentUser = FirebaseUtil.getAuth().getCurrentUser();
-                if (mCurrentUser != null) {
+                FirebaseUser curUser = FirebaseUtil.getAuth().getCurrentUser();
+                mViewModel.setCurrentFirebaseUser(curUser);
+
+                if (curUser != null) {
                     // user is signed in
-                    Log.d(TAG, "onAuthStateChanged: User ID: " + mCurrentUser.getUid());
+                    Log.d(TAG, "onAuthStateChanged: User ID: " + curUser.getUid());
                 } else {
                     Log.d(TAG, "onAuthStateChanged: user == null, launching login");
                     launchLoginActivity();
@@ -77,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO? start listening to Firestore updates
         FirebaseUtil.addAuthListener();
+
+        if (!mViewModel.addSnapshotListeners()) {
+            Log.d(TAG, "onStart: Failed to add snapshotListener to 'Users'");
+            launchLoginActivity();
+        }
     }
 
     @Override
