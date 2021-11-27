@@ -54,6 +54,8 @@ public class CreateFragment extends Fragment {
 
     private static final String TAG = CreateFragment.class.getSimpleName();
 
+    public static final String KEY_FILE_PATH = "FILE_PATH";
+
     private CreateViewModel createViewModel;
     private FragmentCreateBinding binding;
 
@@ -212,14 +214,7 @@ public class CreateFragment extends Fragment {
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         Log.d(TAG, "onImageSaved: Saved to: " + filePath);
 
-                        // TODO launch event creation fragment
-                        NavHostFragment.findNavController(CreateFragment.this)
-                                .navigate(R.id.action_navigation_create_to_navigation_post,
-                                        null,
-                                        new NavOptions.Builder()
-                                                .setEnterAnim(android.R.animator.fade_in)
-                                                .setExitAnim(android.R.animator.fade_out)
-                                                .build());
+                        navToPostFragment(pictureFile.getAbsolutePath());
 
 //                        Toast.makeText(getContext(), "Saved to: " + filePath, Toast.LENGTH_SHORT).show();
                     }
@@ -244,16 +239,18 @@ public class CreateFragment extends Fragment {
             return;
         }
 
-        File pictureFile = new File(filePath + ".mp4");
+        File videoFile = new File(filePath + ".mp4");
 
         videoCapture.startRecording(
-                new VideoCapture.OutputFileOptions.Builder(pictureFile).build(),
+                new VideoCapture.OutputFileOptions.Builder(videoFile).build(),
                 ContextCompat.getMainExecutor(getContext()),
                 new VideoCapture.OnVideoSavedCallback() {
                     @Override
                     public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
                         Log.d(TAG, "onVideoSaved: Saved to: " + filePath);
                         // TODO launch event creation fragment
+
+                        navToPostFragment(videoFile.getAbsolutePath());
 
 //                        Toast.makeText(getContext(), "Saved to: " + filePath, Toast.LENGTH_SHORT).show();
                     }
@@ -286,6 +283,23 @@ public class CreateFragment extends Fragment {
         String filePath = pictureDir.getAbsolutePath() + "/" + timestamp;
 
         return filePath;
+    }
+
+    /**
+     * Navigates to post fragment to create the actual post
+     * @param path of the media file
+     */
+    private void navToPostFragment(String path) {
+        Bundle bundle = new Bundle();
+        bundle.putString(KEY_FILE_PATH, path);
+
+        NavHostFragment.findNavController(CreateFragment.this)
+                .navigate(R.id.action_navigation_create_to_navigation_post,
+                        bundle,
+                        new NavOptions.Builder()
+                                .setEnterAnim(android.R.animator.fade_in)
+                                .setExitAnim(android.R.animator.fade_out)
+                                .build());
     }
 
     @Override

@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../layout/custom_preview.xml" value="0.8342592592592593" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.475" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/custom_email_input.xml" value="0.5432291666666667" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/custom_input.xml" value="0.5137895812053116" />
@@ -65,7 +66,8 @@
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.5640625" />
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.1894630192502533" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.5640625" />
-        <entry key="app/src/main/res/layout/fragment_post.xml" value="0.43110435663627156" />
+        <entry key="app/src/main/res/layout/fragment_post.xml" value="0.3351851851851852" />
+        <entry key="app/src/main/res/layout/profile_info_row.xml" value="0.5541666666666667" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.8728205128205129" />
         <entry key="app/src/main/res/menu/home_menu.xml" value="0.8864583333333333" />
         <entry key="app/src/main/res/menu/profile_menu.xml" value="0.8864583333333333" />
