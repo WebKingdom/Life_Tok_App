@@ -41,6 +41,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentCreateBinding;
+import com.sszabo.life_tok.util.Resources;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -48,13 +49,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
 public class CreateFragment extends Fragment {
 
     private static final String TAG = CreateFragment.class.getSimpleName();
-
-    public static final String KEY_FILE_PATH = "FILE_PATH";
 
     private CreateViewModel createViewModel;
     private FragmentCreateBinding binding;
@@ -92,8 +92,8 @@ public class CreateFragment extends Fragment {
                 new ActivityResultCallback<Map<String, Boolean>>() {
                     @Override
                     public void onActivityResult(Map<String, Boolean> result) {
-                        Boolean allGranted = true;
-                        for (Boolean b : result.values()) {
+                        boolean allGranted = true;
+                        for (boolean b : result.values()) {
                             allGranted = allGranted && b;
                         }
 
@@ -214,7 +214,7 @@ public class CreateFragment extends Fragment {
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         Log.d(TAG, "onImageSaved: Saved to: " + filePath);
 
-                        navToPostFragment(pictureFile.getAbsolutePath());
+                        navToPostFragment(pictureFile.getAbsolutePath(), true);
 
 //                        Toast.makeText(getContext(), "Saved to: " + filePath, Toast.LENGTH_SHORT).show();
                     }
@@ -250,7 +250,7 @@ public class CreateFragment extends Fragment {
                         Log.d(TAG, "onVideoSaved: Saved to: " + filePath);
                         // TODO launch event creation fragment
 
-                        navToPostFragment(videoFile.getAbsolutePath());
+                        navToPostFragment(videoFile.getAbsolutePath(), false);
 
 //                        Toast.makeText(getContext(), "Saved to: " + filePath, Toast.LENGTH_SHORT).show();
                     }
@@ -275,23 +275,25 @@ public class CreateFragment extends Fragment {
         File pictureDir = pictureOptional.get();
 
         if (!pictureDir.exists()) {
-            pictureDir.mkdir();
+            if (!pictureDir.mkdir()) {
+                Toast.makeText(getContext(), "Could not save post. Please enable storage permissions", Toast.LENGTH_LONG).show();
+            }
         }
 
-        Date date = new Date();
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String filePath = pictureDir.getAbsolutePath() + "/" + timestamp;
 
-        return filePath;
+        return pictureDir.getAbsolutePath() + "/" + timestamp;
     }
 
     /**
      * Navigates to post fragment to create the actual post
-     * @param path of the media file
+     * @param path for the media file
+     * @param isPicture true if picture, false otherwise
      */
-    private void navToPostFragment(String path) {
+    private void navToPostFragment(String path, boolean isPicture) {
         Bundle bundle = new Bundle();
-        bundle.putString(KEY_FILE_PATH, path);
+        bundle.putString(Resources.KEY_FILE_PATH, path);
+        bundle.putBoolean(Resources.KEY_IS_PICTURE, isPicture);
 
         NavHostFragment.findNavController(CreateFragment.this)
                 .navigate(R.id.action_navigation_create_to_navigation_post,

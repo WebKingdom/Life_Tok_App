@@ -36,4 +36,8 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >6 characters and not contain white space</string>
     <string name="login_failed">Login failed</string>
+    <string name="event_location">Event Location</string>
+    <string name="event_description">Event Description</string>
+    <string name="event_name">Event Name</string>
+    <string name="prompt_public">Public</string>
 </resources>

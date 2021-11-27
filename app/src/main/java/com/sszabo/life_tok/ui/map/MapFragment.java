@@ -44,10 +44,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
     private static final String TAG = MapFragment.class.getSimpleName();
 
     private static final float DEFAULT_ZOOM = 10;
-    private static final String MAP_VIEW = "MAP_VIEW";
-    private static final String GOOGLE_MAP = "GOOGLE_MAP";
-    private static final String FUSED_LOCATION = "FUSED_LOCATION";
-    private static final String GEOCODER = "GEOCODER";
 
     private MapViewModel mapViewModel;
     private FragmentMapBinding binding;
@@ -178,6 +174,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         for (String permission : permissions) {
             if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
                 // permission not granted, return
+                Toast.makeText(getContext(), "Must enable permissions for functionality ", Toast.LENGTH_LONG).show();
+                onPause();
+                onStop();
                 return;
             }
         }

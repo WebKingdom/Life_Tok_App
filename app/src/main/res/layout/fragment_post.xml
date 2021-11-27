@@ -24,7 +24,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
                 android:visibility="invisible"
-                app:layout_constraintBottom_toTopOf="@id/btn_delete_post"
+                app:layout_constraintBottom_toTopOf="@id/txt_event_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -37,36 +37,150 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
                 android:visibility="visible"
-                app:layout_constraintBottom_toTopOf="@id/btn_delete_post"
+                app:layout_constraintBottom_toTopOf="@id/txt_event_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_delete_post"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/txt_event_name"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
-                android:backgroundTint="@color/indian_red"
-                android:text="@string/delete"
-                app:layout_constraintBottom_toTopOf="@+id/btn_post"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_text_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/event_name"
+                android:minHeight="60dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_event_description"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/video_view_post" />
 
+            <EditText
+                android:id="@+id/txt_event_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_text_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/event_description"
+                android:minHeight="60dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_event_location"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_event_name" />
 
-            <Button
-                android:id="@+id/btn_post"
+            <EditText
+                android:id="@+id/txt_event_location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_text_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/event_location"
+                android:minHeight="60dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/chk_public"
+                app:layout_constraintEnd_toStartOf="@+id/btn_refresh_location"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_event_description" />
+
+            <ImageButton
+                android:id="@+id/btn_refresh_location"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/custom_input"
+                android:src="@drawable/ic_baseline_refresh_24"
+                app:layout_constraintBottom_toBottomOf="@id/txt_event_location"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/txt_event_location"
+                app:layout_constraintTop_toTopOf="@id/txt_event_location" />
+
+            <CheckBox
+                android:id="@+id/chk_public"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
+                android:text="@string/prompt_public"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:checked="true"
+                app:layout_constraintBottom_toTopOf="@+id/progress_bar_post"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_event_location" />
+
+            <Button
+                android:id="@+id/btn_delete_post"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/indian_red"
+                android:text="@string/delete"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/progress_bar_post"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/progress_bar_post" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar_post"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/white"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_post"
+                app:layout_constraintStart_toEndOf="@+id/btn_delete_post"
+                app:layout_constraintTop_toBottomOf="@+id/chk_public" />
+
+            <Button
+                android:id="@+id/btn_post"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/title_post"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_delete_post" />
+                app:layout_constraintStart_toEndOf="@id/progress_bar_post"
+                app:layout_constraintTop_toTopOf="@id/progress_bar_post" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

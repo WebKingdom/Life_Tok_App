@@ -53,7 +53,10 @@
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3854166666666667" />
         <entry key="app/src/main/res/drawable/baseline_account_circle_18.xml" value="0.23385416666666667" />
         <entry key="app/src/main/res/drawable/baseline_account_circle_24.xml" value="0.23385416666666667" />
+        <entry key="app/src/main/res/drawable/custom_input.xml" value="0.5944444444444444" />
+        <entry key="app/src/main/res/drawable/custom_text_input.xml" value="0.5944444444444444" />
         <entry key="app/src/main/res/drawable/ic_baseline_map_24.xml" value="0.3854166666666667" />
+        <entry key="app/src/main/res/drawable/ic_baseline_refresh_24.xml" value="0.5944444444444444" />
         <entry key="app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.3854166666666667" />
         <entry key="app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.3854166666666667" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3854166666666667" />
@@ -63,10 +66,10 @@
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.6186594202898551" />
         <entry key="app/src/main/res/layout/fragment_create.xml" value="0.43034447821681865" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.5640625" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.5640625" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.43465045592705165" />
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.1894630192502533" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.5640625" />
-        <entry key="app/src/main/res/layout/fragment_post.xml" value="0.3351851851851852" />
+        <entry key="app/src/main/res/layout/fragment_post.xml" value="0.4234417344173442" />
         <entry key="app/src/main/res/layout/profile_info_row.xml" value="0.5541666666666667" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.8728205128205129" />
         <entry key="app/src/main/res/menu/home_menu.xml" value="0.8864583333333333" />
