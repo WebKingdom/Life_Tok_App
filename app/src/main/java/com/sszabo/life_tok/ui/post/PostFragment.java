@@ -2,17 +2,14 @@ package com.sszabo.life_tok.ui.post;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -46,19 +43,14 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.sszabo.life_tok.MainActivity;
-import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentPostBinding;
 import com.sszabo.life_tok.model.Event;
-import com.sszabo.life_tok.ui.create.CreateFragment;
-import com.sszabo.life_tok.ui.login.RegisterActivity;
 import com.sszabo.life_tok.util.FirebaseUtil;
 import com.sszabo.life_tok.util.Resources;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -87,7 +79,7 @@ public class PostFragment extends Fragment {
     private String eventDescription;
     private String eventLocation;
 
-    private Location postLocation;
+    private GeoPoint eventGeoPoint;
 
     private String filePath;
 
@@ -200,13 +192,14 @@ public class PostFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
                 if (task.isSuccessful()) {
-                    postLocation = task.getResult();
-                    Log.d(TAG, "onComplete: Location is: " + postLocation.toString());
+                    Location loc = task.getResult();
+                    eventGeoPoint = new GeoPoint(loc.getLatitude(), loc.getLongitude());
+                    Log.d(TAG, "onComplete: Location is: " + loc.toString());
 
                     List<Address> searchAddr = new ArrayList<>();
                     try {
-                        searchAddr = geocoder.getFromLocation(postLocation.getLatitude(),
-                                postLocation.getLongitude(),
+                        searchAddr = geocoder.getFromLocation(eventGeoPoint.getLatitude(),
+                                eventGeoPoint.getLongitude(),
                                 2);
                     } catch (IOException e) {
                         Log.e(TAG, "onComplete: IOException " + e.getMessage() + "\n", e);
@@ -249,6 +242,32 @@ public class PostFragment extends Fragment {
             }
         });
 
+        txtEventLocation.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    // user edited text, must get location
+                    if (!setAndVerifyFields()) {
+                        Toast.makeText(getContext(), "Invalid fields!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    List<Address> addresses;
+                    try {
+                        addresses = geocoder.getFromLocationName(eventLocation, 2);
+                    } catch (IOException e) {
+                        Toast.makeText(getContext(), "Could not get location. Try again", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    Address addr = addresses.get(0);
+                    eventGeoPoint = new GeoPoint(addr.getLatitude(), addr.getLongitude());
+                    txtEventLocation.setText(addr.getAddressLine(0));
+                }
+            }
+        });
+
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -287,36 +306,77 @@ public class PostFragment extends Fragment {
                 if (task.isSuccessful()) {
                     Event event = new Event();
                     event.setMediaUrl(storageReference.getDownloadUrl().toString());
-                    Toast.makeText(getContext(), "Uploaded video", Toast.LENGTH_SHORT).show();
 
                     event.setName(txtEventName.getText().toString());
                     event.setDescription(txtEventDescription.getText().toString());
-                    event.setGeoPoint(new GeoPoint(postLocation.getLatitude(), postLocation.getLongitude()));
+                    event.setGeoPoint(eventGeoPoint);
                     event.setEventType(checkBoxPublic.isChecked() ? 1 : 0);
                     event.setTimestamp(new Timestamp(Calendar.getInstance().getTime()));
 
-                    // upload event to Firebase Firestore
-                    FirebaseUser fUser = FirebaseUtil.getAuth().getCurrentUser();
-                    FirebaseUtil.getFirestore()
-                            .collection("users")
-                            .document(fUser.getUid())
-                            .collection("events")
-                            .add(event)
-                            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(getContext(), "Uploaded event", Toast.LENGTH_SHORT).show();
-                                        progressBar.setVisibility(View.INVISIBLE);
-                                        navToCreateFragment();
-                                    } else {
-                                        Toast.makeText(getContext(), "Error uploading event", Toast.LENGTH_SHORT).show();
+                    if (event.getEventType() == 1) {
+                        // public event upload
+                        FirebaseUtil.getFirestore()
+                                .collection("publicEvents")
+                                .add(event)
+                                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(getContext(), "Uploaded event", Toast.LENGTH_SHORT).show();
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                            navToCreateFragment();
+                                        } else {
+                                            Toast.makeText(getContext(), "Error uploading event", Toast.LENGTH_SHORT).show();
+                                            // delete from storage
+                                            deleteMediaFromDB(storageReference);
+                                            Objects.requireNonNull(task.getException()).printStackTrace();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    } else {
+                        // private event upload
+                        FirebaseUser fUser = FirebaseUtil.getAuth().getCurrentUser();
+                        FirebaseUtil.getFirestore()
+                                .collection("users")
+                                .document(fUser.getUid())
+                                .collection("events")
+                                .add(event)
+                                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(getContext(), "Uploaded event", Toast.LENGTH_SHORT).show();
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                            navToCreateFragment();
+                                        } else {
+                                            Toast.makeText(getContext(), "Error uploading event", Toast.LENGTH_SHORT).show();
+                                            // delete from storage
+                                            deleteMediaFromDB(storageReference);
+                                            Objects.requireNonNull(task.getException()).printStackTrace();
+                                        }
+                                    }
+                                });
+                    }
+
                 } else {
-                    Toast.makeText(getContext(), "Error uploading video", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error uploading media", Toast.LENGTH_SHORT).show();
+                    Objects.requireNonNull(task.getException()).printStackTrace();
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
+            }
+        });
+    }
+
+    private void deleteMediaFromDB(StorageReference ref) {
+        ref.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(getContext(), "Deleted media", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Error deleting media", Toast.LENGTH_SHORT).show();
+                }
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }

@@ -24,6 +24,7 @@ import com.sszabo.life_tok.util.FirebaseUtil;
 import com.sszabo.life_tok.util.Resources;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -157,31 +158,10 @@ public class RegisterActivity extends AppCompatActivity {
                                                 Toast.LENGTH_SHORT).show();
                                         Log.d(TAG, "onFailure: Failed to add user to Firestore with ID: "
                                                 + user.getId());
-                                        task.getException().printStackTrace();
+                                        Objects.requireNonNull(task.getException()).printStackTrace();
                                     }
                                 }
                             });
-
-                    // TODO create dummy event collection DELETE LATER?
-                    FirebaseUtil.getFirestore().collection("users")
-                            .document(user.getId())
-                            .collection("events")
-                            .add(Resources.EVENT_OBJECTS[0])
-                            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    if (task.isSuccessful()) {
-
-                                    } else {
-                                        Toast.makeText(RegisterActivity.this,
-                                                "Failed to add event collection to Firestore",
-                                                Toast.LENGTH_SHORT).show();
-                                        Log.d(TAG, "onFailure: Failed to add event collection to Firestore");
-                                        task.getException().printStackTrace();
-                                    }
-                                }
-                            });
-
                 } else {
                     Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 }

@@ -98,7 +98,7 @@ public class CreateFragment extends Fragment {
                         }
 
                         if (allGranted) {
-                            // TODO take photo or video
+                            // can now take photo or video
                             Log.d(TAG, "onActivityResult: All permissions granted");
                         } else {
                             Toast.makeText(getContext(), "Must enable permission for functionality", Toast.LENGTH_LONG).show();
@@ -248,7 +248,6 @@ public class CreateFragment extends Fragment {
                     @Override
                     public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
                         Log.d(TAG, "onVideoSaved: Saved to: " + filePath);
-                        // TODO launch event creation fragment
 
                         navToPostFragment(videoFile.getAbsolutePath(), false);
 
