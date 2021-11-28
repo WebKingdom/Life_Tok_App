@@ -3,9 +3,12 @@ package com.sszabo.life_tok.model;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.Locale;
+
 public class Event {
 
     private int id;
+    private String userId;
     private String name;
     private String description;
     private String mediaUrl;
@@ -16,10 +19,11 @@ public class Event {
     private int eventType;
 
     private GeoPoint geoPoint;
+    private String locationName;
     private Timestamp timestamp;
 
-    public Event(int id, String name, String description, String mediaUrl, int eventType, GeoPoint geoPoint, Timestamp timestamp) {
-        this.id = id;
+    public Event(String userId, String name, String description, String mediaUrl, int eventType, GeoPoint geoPoint, Timestamp timestamp) {
+        this.userId = userId;
         this.name = name;
         this.description = description;
         this.mediaUrl = mediaUrl;
@@ -91,11 +95,44 @@ public class Event {
         this.geoPoint = geoPoint;
     }
 
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
     public Timestamp getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * Searches an event for name, description, or location name.
+     * @param query to search for
+     * @return true if event contains query, false otherwise
+     */
+    public boolean contains(String query) {
+        if (this.name.toLowerCase().contains(query)) {
+            return true;
+        }
+
+        if (this.description.toLowerCase().contains(query)) {
+            return true;
+        }
+
+        return this.locationName.toLowerCase().contains(query);
     }
 }

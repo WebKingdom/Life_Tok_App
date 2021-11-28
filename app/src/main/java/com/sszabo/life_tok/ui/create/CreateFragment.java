@@ -79,9 +79,9 @@ public class CreateFragment extends Fragment {
         binding = FragmentCreateBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        btnPhoto = binding.btnPhoto;
-        btnVideo = binding.btnVideo;
-        btnGallery = binding.btnGallery;
+        btnPhoto = binding.floatingBtnPhoto;
+        btnVideo = binding.floatingBtnVideo;
+        btnGallery = binding.floatingBtnGallery;
         previewView = binding.previewViewCamera;
 
         setListener();
@@ -295,12 +295,7 @@ public class CreateFragment extends Fragment {
         bundle.putBoolean(Resources.KEY_IS_PICTURE, isPicture);
 
         NavHostFragment.findNavController(CreateFragment.this)
-                .navigate(R.id.action_navigation_create_to_navigation_post,
-                        bundle,
-                        new NavOptions.Builder()
-                                .setEnterAnim(android.R.animator.fade_in)
-                                .setExitAnim(android.R.animator.fade_out)
-                                .build());
+                .navigate(R.id.action_navigation_create_to_navigation_post, bundle);
     }
 
     @Override

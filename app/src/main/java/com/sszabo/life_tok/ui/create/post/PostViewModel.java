@@ -1,4 +1,4 @@
-package com.sszabo.life_tok.ui.post;
+package com.sszabo.life_tok.ui.create.post;
 
 import androidx.lifecycle.ViewModel;
 

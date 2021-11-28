@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,8 +35,7 @@ public class ProfileFragment extends Fragment {
     // TODO create adapter for recyclerview and
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        profileViewModel =
-                new ViewModelProvider(this).get(ProfileViewModel.class);
+        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -71,8 +71,8 @@ public class ProfileFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                // TODO navigate to screen
-
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_navigation_profile_to_navigation_settings);
                 return true;
             case R.id.action_logout:
                 FirebaseUtil.getAuth().signOut();

@@ -2,7 +2,6 @@ package com.sszabo.life_tok;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -17,7 +16,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.sszabo.life_tok.databinding.ActivityMainBinding;
 import com.sszabo.life_tok.ui.login.LoginActivity;
 import com.sszabo.life_tok.util.FirebaseUtil;

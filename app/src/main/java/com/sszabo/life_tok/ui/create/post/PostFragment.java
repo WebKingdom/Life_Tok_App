@@ -1,4 +1,4 @@
-package com.sszabo.life_tok.ui.post;
+package com.sszabo.life_tok.ui.create.post;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -66,7 +66,7 @@ public class PostFragment extends Fragment {
     private Button btnDelete;
     private Button btnPost;
     private CheckBox checkBoxPublic;
-    private ImageButton btnRefresh;
+    private ImageButton btnRefreshLocation;
     private ProgressBar progressBar;
     private EditText txtEventName;
     private EditText txtEventDescription;
@@ -102,7 +102,7 @@ public class PostFragment extends Fragment {
         btnDelete = binding.btnDeletePost;
         btnPost = binding.btnPost;
         checkBoxPublic = binding.chkPublic;
-        btnRefresh = binding.btnRefreshLocation;
+        btnRefreshLocation = binding.btnRefreshLocation;
         progressBar = binding.progressBarPost;
         txtEventName = binding.txtEventName;
         txtEventDescription = binding.txtEventDescription;
@@ -153,7 +153,7 @@ public class PostFragment extends Fragment {
             public void handleOnBackPressed() {
                 File file = new File(filePath);
                 if (!file.delete()) {
-                    Toast.makeText(getContext(), "Failed to delete file, delete manually", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Failed to delete file. Delete manually", Toast.LENGTH_SHORT).show();
                 }
                 navToCreateFragment();
             }
@@ -235,7 +235,7 @@ public class PostFragment extends Fragment {
             }
         });
 
-        btnRefresh.setOnClickListener(new View.OnClickListener() {
+        btnRefreshLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getLocationOfEvent();
@@ -290,8 +290,8 @@ public class PostFragment extends Fragment {
             Toast.makeText(getContext(), "Invalid fields!", Toast.LENGTH_LONG).show();
             return;
         }
-
         progressBar.setVisibility(View.VISIBLE);
+        txtEventLocation.clearFocus();
 
         // upload file to Firebase Storage
         Uri file = Uri.fromFile(new File(filePath));
@@ -307,9 +307,11 @@ public class PostFragment extends Fragment {
                     Event event = new Event();
                     event.setMediaUrl(storageReference.getDownloadUrl().toString());
 
+                    event.setUserId(FirebaseUtil.getAuth().getCurrentUser().getUid());
                     event.setName(txtEventName.getText().toString());
                     event.setDescription(txtEventDescription.getText().toString());
                     event.setGeoPoint(eventGeoPoint);
+                    event.setLocationName(eventLocation);
                     event.setEventType(checkBoxPublic.isChecked() ? 1 : 0);
                     event.setTimestamp(new Timestamp(Calendar.getInstance().getTime()));
 

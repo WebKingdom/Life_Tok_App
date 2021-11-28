@@ -2,11 +2,13 @@ package com.sszabo.life_tok.ui.map;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
@@ -14,46 +16,35 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentMapBinding;
 import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.model.User;
-import com.sszabo.life_tok.ui.login.RegisterActivity;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-
-import kotlinx.coroutines.DefaultExecutorKt;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -64,10 +55,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
     private MapViewModel mapViewModel;
     private FragmentMapBinding binding;
 
+    private FloatingActionButton btnRefreshMap;
+    private SearchView searchView;
     private MapView mMapView;
     private GoogleMap mGoogleMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private Geocoder geocoder;
 
     private ActivityResultLauncher<String[]> activityResultLauncher;
 
@@ -80,15 +72,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
 
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        SearchView searchView = root.findViewById(R.id.searchViewMap);
-        mapViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                searchView.getQuery();
-
-            }
-        });
+        setHasOptionsMenu(true);
 
         if (savedInstanceState != null) {
             // TODO? load data from save
@@ -115,17 +99,80 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                 });
 
         eventsList = new ArrayList<>();
-        mMapView = root.findViewById(R.id.mapView);
+        btnRefreshMap = binding.floatingBtnRefreshMap;
+        mMapView = binding.mapView;
         mMapView.onCreate(savedInstanceState);
+
+        setListeners();
 
         Log.d(TAG, "onCreateView: Created view");
         return root;
     }
 
+    private void setListeners() {
+        btnRefreshMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPublicAndFollowingEvents();
+            }
+        });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.default_menu, menu);
+
+        MenuItem menuSearchItem = menu.findItem(R.id.item_action_search);
+        searchView = (SearchView) menuSearchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // search events by name, description, or location
+                ArrayList<Event> events = new ArrayList<>();
+                for (Event event : eventsList) {
+                    if (event.contains(query.toLowerCase())) {
+                        events.add(event);
+                    }
+                }
+
+                if (events.isEmpty()) {
+                    Toast.makeText(getContext(), "No events found", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                // clear markers and display only searched ones
+                mGoogleMap.clear();
+                displayEvents(events);
+                LatLng curCoord = new LatLng(events.get(0).getGeoPoint().getLatitude(),
+                        events.get(0).getGeoPoint().getLongitude());
+                mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curCoord, DEFAULT_ZOOM));
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Returns a list of events that match the query
+     * @param query for the event to search for
+     * @return list of events
+     */
+    private ArrayList<Event> findEventByContains(String query) {
+        ArrayList<Event> events = new ArrayList<>();
+        for (Event event : events) {
+            if (event.contains(query)) {
+                events.add(event);
+            }
+        }
+        return events;
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         // TODO? save state
-
         super.onSaveInstanceState(outState);
     }
 
@@ -133,7 +180,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
     public void onStart() {
         super.onStart();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
-        geocoder = new Geocoder(this.getContext());
         mMapView.onStart();
     }
 
@@ -196,7 +242,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         }
 
         // get and display event locations
-        mGoogleMap.clear();
         getPublicAndFollowingEvents();
 
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
@@ -215,7 +260,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         mGoogleMap.setMyLocationEnabled(true);
     }
 
+    /**
+     * Gets and marks all public and following user events on the map.
+     * Clears all markers and the eventList before setting any new markers
+     */
     private void getPublicAndFollowingEvents() {
+        mGoogleMap.clear();
+        eventsList.clear();
         User curUser = MainViewModel.getCurrentUser();
 
         // get all public events
@@ -259,6 +310,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         }
     }
 
+    /**
+     * Shows the list of events as markers on the map
+     * @param list of events to show on map
+     */
     private void displayEvents(ArrayList<Event> list) {
         for (Event event : list) {
             LatLng pos = new LatLng(event.getGeoPoint().getLatitude(), event.getGeoPoint().getLongitude());

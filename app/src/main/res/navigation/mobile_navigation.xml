@@ -9,13 +9,25 @@
         android:id="@+id/navigation_home"
         android:name="com.sszabo.life_tok.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_map"
+            app:destination="@id/navigation_map"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_map"
         android:name="com.sszabo.life_tok.ui.map.MapFragment"
         android:label="@string/title_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_event_view"
+            app:destination="@id/navigation_event_view"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_create"
@@ -33,11 +45,15 @@
         android:id="@+id/navigation_profile"
         android:name="com.sszabo.life_tok.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_settings"
+            app:destination="@id/navigation_settings" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_post"
-        android:name="com.sszabo.life_tok.ui.post.PostFragment"
+        android:name="com.sszabo.life_tok.ui.create.post.PostFragment"
         android:label="@string/title_post"
         tools:layout="@layout/fragment_post">
         <action
@@ -47,6 +63,34 @@
             app:exitAnim="@android:animator/fade_out"
             app:popUpTo="@id/navigation_create"
             app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_event_view"
+        android:name="com.sszabo.life_tok.ui.event.EventViewFragment"
+        android:label="@string/title_event"
+        tools:layout="@layout/fragment_event_view">
+        <action
+            android:id="@+id/action_navigation_event_view_to_navigation_map"
+            app:destination="@id/navigation_map"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"
+            app:popUpTo="@id/navigation_map"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.sszabo.life_tok.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_navigation_settings_to_navigation_profile"
+            app:destination="@id/navigation_profile"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"
+            app:popUpTo="@id/navigation_profile"
+            app:popUpToInclusive="true"/>
     </fragment>
 
 </navigation>

@@ -6,6 +6,8 @@
     <string name="title_create">Create</string>
     <string name="title_post">Post</string>
     <string name="title_profile">Profile</string>
+    <string name="title_event">Event</string>
+    <string name="title_settings">Settings</string>
 
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -39,5 +41,10 @@
     <string name="event_location">Event Location</string>
     <string name="event_description">Event Description</string>
     <string name="event_name">Event Name</string>
+
     <string name="prompt_public">Public</string>
+    <string name="refresh_map">Refresh Map</string>
+    <string name="take_picture">Take Picture</string>
+    <string name="take_video">Take Video</string>
+    <string name="get_from_gallery">Get From Gallery</string>
 </resources>
