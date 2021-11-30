@@ -15,6 +15,11 @@ public class User {
     private String username;
 
     /**
+     * List of public event IDs
+     */
+    private List<String> publicEventIds;
+
+    /**
      * List of following user IDs
      */
     private List<String> following;
@@ -25,7 +30,7 @@ public class User {
     private List<String> followers;
 
     /**
-     * Fully Populated constructor
+     * Fully populated user constructor
      * @param id
      * @param firstName
      * @param lastName
@@ -33,11 +38,12 @@ public class User {
      * @param email
      * @param address
      * @param phoneNo
+     * @param publicEventIds
      * @param following
      * @param followers
      */
-    public User(String id, String firstName, String lastName, String username, String email,
-                String address, String phoneNo, List<String> following, List<String> followers) {
+    public User(String id, String firstName, String lastName, String username, String email, String address,
+                String phoneNo, List<String> publicEventIds, List<String> following, List<String> followers) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -45,6 +51,7 @@ public class User {
         this.email = email;
         this.address = address;
         this.phoneNo = phoneNo;
+        this.publicEventIds = publicEventIds;
         this.following = following;
         this.followers = followers;
     }
@@ -60,12 +67,13 @@ public class User {
      * @param followers
      */
     public User(String id, String firstName, String lastName, String address, String phoneNo,
-                List<String> following, List<String> followers) {
+                List<String> publicEventIds, List<String> following, List<String> followers) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phoneNo = phoneNo;
+        this.publicEventIds = publicEventIds;
         this.following = following;
         this.followers = followers;
     }
@@ -131,6 +139,14 @@ public class User {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
+    }
+
+    public List<String> getPublicEventIds() {
+        return publicEventIds;
+    }
+
+    public void setPublicEventIds(List<String> publicEventIds) {
+        this.publicEventIds = publicEventIds;
     }
 
     public List<String> getFollowing() {

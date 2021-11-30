@@ -7,14 +7,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -72,7 +67,7 @@ public class ProfileFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_navigation_profile_to_navigation_settings);
+                        .navigate(R.id.action_nav_profile_to_nav_settings);
                 return true;
             case R.id.action_logout:
                 FirebaseUtil.getAuth().signOut();

@@ -3,7 +3,7 @@ package com.sszabo.life_tok.ui.create;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,14 +28,10 @@ import androidx.camera.core.Preview;
 import androidx.camera.core.VideoCapture;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavDirections;
-import androidx.navigation.NavOptions;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -49,7 +45,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
 public class CreateFragment extends Fragment {
@@ -174,15 +169,17 @@ public class CreateFragment extends Fragment {
         });
 
         btnVideo.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("RestrictedApi")
+            @SuppressLint({"RestrictedApi", "ResourceAsColor"})
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 if (createViewModel.isRecording()) {
+                    btnVideo.setBackgroundTintList(ColorStateList.valueOf(R.color.light_grey));
                     videoCapture.stopRecording();
                     createViewModel.setRecording(false);
                 } else {
                     createViewModel.setRecording(true);
+                    btnVideo.setBackgroundTintList(ColorStateList.valueOf(R.color.white_smoke));
                     recordVideo();
                 }
             }
@@ -191,7 +188,7 @@ public class CreateFragment extends Fragment {
         btnGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // TODO choose photo from gallery (optional)
             }
         });
     }
@@ -295,7 +292,7 @@ public class CreateFragment extends Fragment {
         bundle.putBoolean(Resources.KEY_IS_PICTURE, isPicture);
 
         NavHostFragment.findNavController(CreateFragment.this)
-                .navigate(R.id.action_navigation_create_to_navigation_post, bundle);
+                .navigate(R.id.action_nav_create_to_nav_post, bundle);
     }
 
     @Override

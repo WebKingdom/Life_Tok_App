@@ -3,15 +3,18 @@ package com.sszabo.life_tok.model;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.util.Locale;
+import java.io.Serializable;
 
-public class Event {
+public class Event implements Serializable {
 
-    private int id;
+    private String id;
     private String userId;
     private String name;
     private String description;
     private String mediaUrl;
+    // TODO use picture/thumbnail only when not video. Otherwise save thumbnail pic for video
+    private String thumbnailUrl;
+    private boolean isPicture;
 
     /**
      * Public (1) or private (0) event
@@ -22,22 +25,31 @@ public class Event {
     private String locationName;
     private Timestamp timestamp;
 
-    public Event(String userId, String name, String description, String mediaUrl, int eventType, GeoPoint geoPoint, Timestamp timestamp) {
+    public Event(String id, String userId, String name, String description, String mediaUrl, String thumbnailUrl,
+                 boolean isPicture, int eventType, GeoPoint geoPoint, String locationName, Timestamp timestamp) {
+        this.id = id;
         this.userId = userId;
         this.name = name;
         this.description = description;
         this.mediaUrl = mediaUrl;
+        this.thumbnailUrl = thumbnailUrl;
+        this.isPicture = isPicture;
         this.eventType = eventType;
         this.geoPoint = geoPoint;
+        this.locationName = locationName;
         this.timestamp = timestamp;
     }
 
-    public Event(String name, String description, String mediaUrl, int eventType, GeoPoint geoPoint, Timestamp timestamp) {
+    public Event(String name, String description, String mediaUrl, String thumbnailUrl, boolean isPicture,
+                 int eventType, GeoPoint geoPoint, String locationName, Timestamp timestamp) {
         this.name = name;
         this.description = description;
         this.mediaUrl = mediaUrl;
+        this.thumbnailUrl = thumbnailUrl;
+        this.isPicture = isPicture;
         this.eventType = eventType;
         this.geoPoint = geoPoint;
+        this.locationName = locationName;
         this.timestamp = timestamp;
     }
 
@@ -47,12 +59,20 @@ public class Event {
     public Event() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -77,6 +97,14 @@ public class Event {
 
     public void setMediaUrl(String mediaUrl) {
         this.mediaUrl = mediaUrl;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public int getEventType() {
@@ -111,16 +139,17 @@ public class Event {
         this.timestamp = timestamp;
     }
 
-    public String getUserId() {
-        return userId;
+    public boolean isPicture() {
+        return isPicture;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setPicture(boolean picture) {
+        isPicture = picture;
     }
 
     /**
      * Searches an event for name, description, or location name.
+     *
      * @param query to search for
      * @return true if event contains query, false otherwise
      */

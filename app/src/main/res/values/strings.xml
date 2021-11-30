@@ -47,4 +47,5 @@
     <string name="take_picture">Take Picture</string>
     <string name="take_video">Take Video</string>
     <string name="get_from_gallery">Get From Gallery</string>
+    <string name="event_media">Event Media</string>
 </resources>

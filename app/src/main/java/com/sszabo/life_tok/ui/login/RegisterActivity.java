@@ -118,6 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
                             address,
                             phone,
                             new ArrayList<>(0),
+                            new ArrayList<>(0),
                             new ArrayList<>(0)
                     );
 

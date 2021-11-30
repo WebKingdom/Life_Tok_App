@@ -2,12 +2,15 @@ package com.sszabo.life_tok.ui.create.post;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +38,9 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,6 +48,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentPostBinding;
 import com.sszabo.life_tok.model.Event;
@@ -53,6 +59,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -78,6 +85,7 @@ public class PostFragment extends Fragment {
     private String eventName;
     private String eventDescription;
     private String eventLocation;
+    private boolean isPicture;
 
     private GeoPoint eventGeoPoint;
 
@@ -97,16 +105,16 @@ public class PostFragment extends Fragment {
         View root = binding.getRoot();
 
         filePath = getArguments().getString(Resources.KEY_FILE_PATH);
-        boolean isPicture = getArguments().getBoolean(Resources.KEY_IS_PICTURE);
+        isPicture = getArguments().getBoolean(Resources.KEY_IS_PICTURE);
 
         btnDelete = binding.btnDeletePost;
-        btnPost = binding.btnPost;
-        checkBoxPublic = binding.chkPublic;
-        btnRefreshLocation = binding.btnRefreshLocation;
+        btnPost = binding.btnEventPost;
+        checkBoxPublic = binding.chkPublicPost;
+        btnRefreshLocation = binding.btnRefreshLocationPost;
         progressBar = binding.progressBarPost;
-        txtEventName = binding.txtEventName;
-        txtEventDescription = binding.txtEventDescription;
-        txtEventLocation = binding.txtEventLocation;
+        txtEventName = binding.txtEventNamePost;
+        txtEventDescription = binding.txtEventDescriptionPost;
+        txtEventLocation = binding.txtEventLocationPost;
         videoView = binding.videoViewPost;
         imageView = binding.imageViewPost;
 
@@ -164,8 +172,8 @@ public class PostFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         getLocationOfEvent();
     }
 
@@ -215,6 +223,9 @@ public class PostFragment extends Fragment {
         });
     }
 
+    /**
+     * Sets listeners for buttons and other objects
+     */
     private void setListeners() {
         btnPost.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -285,81 +296,31 @@ public class PostFragment extends Fragment {
         });
     }
 
+    /**
+     * Handles the posting of the new event
+     */
     private void postEvent() {
+        txtEventLocation.clearFocus();
         if (!setAndVerifyFields()) {
             Toast.makeText(getContext(), "Invalid fields!", Toast.LENGTH_LONG).show();
             return;
         }
         progressBar.setVisibility(View.VISIBLE);
-        txtEventLocation.clearFocus();
+
+        String uid = FirebaseUtil.getAuth().getCurrentUser().getUid();
 
         // upload file to Firebase Storage
         Uri file = Uri.fromFile(new File(filePath));
+        String uploadPath = "userMedia/" + uid + "/" + file.getLastPathSegment();
         StorageReference storageReference = FirebaseUtil.getStorage()
                 .getReference()
-                .child("userMedia/" + file.getLastPathSegment());
-        UploadTask uploadTask = storageReference.putFile(file);
+                .child(uploadPath);
 
-        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        storageReference.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if (task.isSuccessful()) {
-                    Event event = new Event();
-                    event.setMediaUrl(storageReference.getDownloadUrl().toString());
-
-                    event.setUserId(FirebaseUtil.getAuth().getCurrentUser().getUid());
-                    event.setName(txtEventName.getText().toString());
-                    event.setDescription(txtEventDescription.getText().toString());
-                    event.setGeoPoint(eventGeoPoint);
-                    event.setLocationName(eventLocation);
-                    event.setEventType(checkBoxPublic.isChecked() ? 1 : 0);
-                    event.setTimestamp(new Timestamp(Calendar.getInstance().getTime()));
-
-                    if (event.getEventType() == 1) {
-                        // public event upload
-                        FirebaseUtil.getFirestore()
-                                .collection("publicEvents")
-                                .add(event)
-                                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(getContext(), "Uploaded event", Toast.LENGTH_SHORT).show();
-                                            progressBar.setVisibility(View.INVISIBLE);
-                                            navToCreateFragment();
-                                        } else {
-                                            Toast.makeText(getContext(), "Error uploading event", Toast.LENGTH_SHORT).show();
-                                            // delete from storage
-                                            deleteMediaFromDB(storageReference);
-                                            Objects.requireNonNull(task.getException()).printStackTrace();
-                                        }
-                                    }
-                                });
-                    } else {
-                        // private event upload
-                        FirebaseUser fUser = FirebaseUtil.getAuth().getCurrentUser();
-                        FirebaseUtil.getFirestore()
-                                .collection("users")
-                                .document(fUser.getUid())
-                                .collection("events")
-                                .add(event)
-                                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(getContext(), "Uploaded event", Toast.LENGTH_SHORT).show();
-                                            progressBar.setVisibility(View.INVISIBLE);
-                                            navToCreateFragment();
-                                        } else {
-                                            Toast.makeText(getContext(), "Error uploading event", Toast.LENGTH_SHORT).show();
-                                            // delete from storage
-                                            deleteMediaFromDB(storageReference);
-                                            Objects.requireNonNull(task.getException()).printStackTrace();
-                                        }
-                                    }
-                                });
-                    }
-
+                    uploadEventObject(uid, storageReference);
                 } else {
                     Toast.makeText(getContext(), "Error uploading media", Toast.LENGTH_SHORT).show();
                     Objects.requireNonNull(task.getException()).printStackTrace();
@@ -369,13 +330,95 @@ public class PostFragment extends Fragment {
         });
     }
 
+    /**
+     * Uploads the event object to Firestore and updates the public event list field for users if the event is public
+     * @param uid User ID
+     * @param stoRef Storage Reference to the media
+     */
+    private void uploadEventObject(String uid, StorageReference stoRef) {
+        DocumentReference docRef = FirebaseUtil.getFirestore().collection("publicEvents").document();
+
+        Event event = new Event(docRef.getId(),
+                uid,
+                eventName,
+                eventDescription,
+                stoRef.toString(),
+                "",
+                isPicture,
+                checkBoxPublic.isChecked() ? 1 : 0,
+                eventGeoPoint,
+                eventLocation,
+                new Timestamp(Calendar.getInstance().getTime()));
+
+        if (event.getEventType() == 1) {
+            // public event upload
+            docRef.set(event).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        // update user public events field
+                        List<String> eventsList = MainViewModel.getCurrentUser().getPublicEventIds();
+                        eventsList.add(event.getId());
+                        FirebaseUtil.getFirestore()
+                                .collection("users")
+                                .document(uid)
+                                .update("publicEventIds", eventsList)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(getContext(), "Uploaded event",
+                                                    Toast.LENGTH_SHORT).show();
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                            navToCreateFragment();
+                                        } else {
+                                            Toast.makeText(getContext(), "Failed to update user events",
+                                                    Toast.LENGTH_SHORT).show();
+                                            deleteMediaFromDB(stoRef);
+                                            Objects.requireNonNull(task.getException()).printStackTrace();
+                                        }
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(getContext(), "Error uploading event", Toast.LENGTH_SHORT).show();
+                        deleteMediaFromDB(stoRef);
+                        Objects.requireNonNull(task.getException()).printStackTrace();
+                    }
+                }
+            });
+        } else {
+            // private event upload
+            FirebaseUtil.getFirestore()
+                    .collection("users")
+                    .document(uid)
+                    .collection("events")
+                    .add(event)
+                    .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getContext(), "Uploaded event", Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.INVISIBLE);
+                                navToCreateFragment();
+                            } else {
+                                Toast.makeText(getContext(), "Error uploading event", Toast.LENGTH_SHORT).show();
+                                deleteMediaFromDB(stoRef);
+                                Objects.requireNonNull(task.getException()).printStackTrace();
+                            }
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Deletes the media file from Firebase Storage and makes the progress bar invisible
+     * @param ref the storage reference to the media
+     */
     private void deleteMediaFromDB(StorageReference ref) {
         ref.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Toast.makeText(getContext(), "Deleted media", Toast.LENGTH_SHORT).show();
-                } else {
+                if (!task.isSuccessful()) {
                     Toast.makeText(getContext(), "Error deleting media", Toast.LENGTH_SHORT).show();
                 }
                 progressBar.setVisibility(View.INVISIBLE);
@@ -409,13 +452,7 @@ public class PostFragment extends Fragment {
     }
 
     private void navToCreateFragment() {
-        NavHostFragment.findNavController(PostFragment.this)
-                .navigate(R.id.action_navigation_post_to_navigation_create,
-                        null,
-                        new NavOptions.Builder()
-                                .setEnterAnim(android.R.animator.fade_in)
-                                .setExitAnim(android.R.animator.fade_out)
-                                .build());
+        NavHostFragment.findNavController(PostFragment.this).navigate(R.id.action_nav_post_to_nav_create);
     }
 
     @Override

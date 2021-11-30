@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -31,6 +32,8 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -42,6 +45,7 @@ import com.sszabo.life_tok.databinding.FragmentMapBinding;
 import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
+import com.sszabo.life_tok.util.Resources;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -50,7 +54,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
 
     private static final String TAG = MapFragment.class.getSimpleName();
 
-    private static final float DEFAULT_ZOOM = 10;
+    private static final float DEFAULT_ZOOM = 12;
+    private static final float CLOSE_ZOOM = 18;
 
     private MapViewModel mapViewModel;
     private FragmentMapBinding binding;
@@ -155,21 +160,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         });
     }
 
-    /**
-     * Returns a list of events that match the query
-     * @param query for the event to search for
-     * @return list of events
-     */
-    private ArrayList<Event> findEventByContains(String query) {
-        ArrayList<Event> events = new ArrayList<>();
-        for (Event event : events) {
-            if (event.contains(query)) {
-                events.add(event);
-            }
-        }
-        return events;
-    }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         // TODO? save state
@@ -241,23 +231,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
             }
         }
 
+        mGoogleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapstyle_life_tok));
+
         // get and display event locations
         getPublicAndFollowingEvents();
 
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if (task.isSuccessful()) {
-                    Location curLoc = task.getResult();
-                    LatLng curCoord = new LatLng(curLoc.getLatitude(), curLoc.getLongitude());
-                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curCoord, DEFAULT_ZOOM));
-                } else {
-                    Toast.makeText(getContext(), "Could not get location", Toast.LENGTH_SHORT).show();
+        if (getArguments() != null) {
+            // Navigated from home page or event view to here with event selected
+            Event curEvent = (Event) getArguments().getSerializable(Resources.KEY_EVENT);
+            LatLng curCoor = new LatLng(curEvent.getGeoPoint().getLatitude(), curEvent.getGeoPoint().getLongitude());
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curCoor, CLOSE_ZOOM));
+        } else {
+            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+                @Override
+                public void onComplete(@NonNull Task<Location> task) {
+                    if (task.isSuccessful()) {
+                        Location curLoc = task.getResult();
+                        LatLng curCoord = new LatLng(curLoc.getLatitude(), curLoc.getLongitude());
+                        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curCoord, DEFAULT_ZOOM));
+                    } else {
+                        Toast.makeText(getContext(), "Could not get location", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
+            });
+        }
 
         mGoogleMap.setMyLocationEnabled(true);
+
+        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(@NonNull Marker marker) {
+                navToEventViewFragment((int) marker.getZIndex());
+            }
+        });
+    }
+
+    private void navToEventViewFragment(int index) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Resources.KEY_EVENT, eventsList.get(index));
+
+        NavHostFragment.findNavController(MapFragment.this)
+                .navigate(R.id.action_nav_map_to_nav_event_view, bundle);
     }
 
     /**
@@ -312,15 +326,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
 
     /**
      * Shows the list of events as markers on the map
+     *
      * @param list of events to show on map
      */
     private void displayEvents(ArrayList<Event> list) {
-        for (Event event : list) {
-            LatLng pos = new LatLng(event.getGeoPoint().getLatitude(), event.getGeoPoint().getLongitude());
+        for (int i = 0; i < list.size(); i++) {
+            Event e = list.get(i);
+            LatLng pos = new LatLng(e.getGeoPoint().getLatitude(), e.getGeoPoint().getLongitude());
             mGoogleMap.addMarker(new MarkerOptions()
                     .position(pos)
-                    .title(event.getName())
-                    .snippet(event.getDescription()));
+                    .title(list.get(i).getName())
+                    .alpha(0.7f)
+                    .zIndex(i)
+                    .snippet(list.get(i).getDescription()));
         }
     }
 }
