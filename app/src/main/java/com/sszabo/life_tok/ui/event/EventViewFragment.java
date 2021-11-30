@@ -89,13 +89,6 @@ public class EventViewFragment extends Fragment {
         super.onStart();
 
         final long HUNDRED_MEGABYTE = 100 * 1024 * 1024;
-//        String uid = FirebaseUtil.getAuth().getUid();
-//        String downloadPath = "userMedia/" + uid + "/" + event.getTimestamp();
-//        if (event.isPicture()) {
-//            downloadPath = downloadPath + ".jpeg";
-//        } else {
-//            downloadPath = downloadPath + ".mp4";
-//        }
         StorageReference ref = FirebaseUtil.getStorage().getReferenceFromUrl(event.getMediaUrl());
 
         ref.getBytes(HUNDRED_MEGABYTE).addOnCompleteListener(new OnCompleteListener<byte[]>() {
