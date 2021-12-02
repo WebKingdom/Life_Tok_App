@@ -178,7 +178,7 @@
                 android:layout_marginEnd="16dp"
                 android:indeterminate="true"
                 android:indeterminateTint="@android:color/white"
-                android:visibility="visible" />
+                android:visibility="invisible" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_create_account"

@@ -43,6 +43,7 @@ public class EventViewFragment extends Fragment {
     private FragmentEventViewBinding binding;
 
     private TextView txtEventName;
+    private TextView txtEventUsername;
     private TextView txtEventDescription;
     private TextView txtEventLocation;
     private VideoView videoView;
@@ -61,6 +62,7 @@ public class EventViewFragment extends Fragment {
         View root = binding.getRoot();
 
         txtEventName = binding.txtEventViewName;
+        txtEventUsername = binding.txtEventViewUsername;
         txtEventDescription = binding.txtEventViewDescription;
         txtEventLocation = binding.txtEventViewLocation;
         videoView = binding.videoViewEvent;
@@ -126,8 +128,18 @@ public class EventViewFragment extends Fragment {
         });
 
         txtEventName.setText(event.getName());
+        txtEventUsername.setText("@" + event.getUsername());
         txtEventDescription.setText(event.getDescription());
         txtEventLocation.setText(event.getLocationName());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (isVisible()) {
+            getActivity().setTitle(event.getName());
+        }
     }
 
     private void setListeners() {

@@ -340,6 +340,7 @@ public class PostFragment extends Fragment {
 
         Event event = new Event(docRef.getId(),
                 uid,
+                MainViewModel.getCurrentUser().getUsername(),
                 eventName,
                 eventDescription,
                 stoRef.toString(),

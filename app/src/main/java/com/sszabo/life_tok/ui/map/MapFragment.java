@@ -332,13 +332,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
     private void displayEvents(ArrayList<Event> list) {
         for (int i = 0; i < list.size(); i++) {
             Event e = list.get(i);
+            String owner = "@" + e.getUsername();
             LatLng pos = new LatLng(e.getGeoPoint().getLatitude(), e.getGeoPoint().getLongitude());
             mGoogleMap.addMarker(new MarkerOptions()
                     .position(pos)
-                    .title(list.get(i).getName())
+                    .title(e.getName())
                     .alpha(0.7f)
                     .zIndex(i)
-                    .snippet(list.get(i).getDescription()));
+                    .snippet(owner));
         }
     }
 }

@@ -174,12 +174,12 @@ public class CreateFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (createViewModel.isRecording()) {
-                    btnVideo.setBackgroundTintList(ColorStateList.valueOf(R.color.light_grey));
+                    btnVideo.setBackgroundTintList(ColorStateList.valueOf(R.color.white_smoke));
                     videoCapture.stopRecording();
                     createViewModel.setRecording(false);
                 } else {
                     createViewModel.setRecording(true);
-                    btnVideo.setBackgroundTintList(ColorStateList.valueOf(R.color.white_smoke));
+                    btnVideo.setBackgroundTintList(ColorStateList.valueOf(R.color.light_grey));
                     recordVideo();
                 }
             }

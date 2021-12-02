@@ -9,6 +9,7 @@ public class Event implements Serializable {
 
     private String id;
     private String userId;
+    private String username;
     private String name;
     private String description;
     private String mediaUrl;
@@ -25,10 +26,12 @@ public class Event implements Serializable {
     private String locationName;
     private Timestamp timestamp;
 
-    public Event(String id, String userId, String name, String description, String mediaUrl, String thumbnailUrl,
-                 boolean isPicture, int eventType, GeoPoint geoPoint, String locationName, Timestamp timestamp) {
+    public Event(String id, String userId, String username, String name, String description, String mediaUrl,
+                 String thumbnailUrl, boolean isPicture, int eventType, GeoPoint geoPoint, String locationName,
+                 Timestamp timestamp) {
         this.id = id;
         this.userId = userId;
+        this.username = username;
         this.name = name;
         this.description = description;
         this.mediaUrl = mediaUrl;
@@ -73,6 +76,14 @@ public class Event implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {

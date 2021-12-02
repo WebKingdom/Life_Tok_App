@@ -66,7 +66,6 @@ public class RegisterActivity extends AppCompatActivity {
         txtConfirmPassword = findViewById(R.id.txt_confirm_password);
         btnCreateAccount = findViewById(R.id.btn_create_account);
         progressBarRegister = findViewById(R.id.progress_bar_register);
-        progressBarRegister.setVisibility(View.INVISIBLE);
 
         setUIListeners();
     }
