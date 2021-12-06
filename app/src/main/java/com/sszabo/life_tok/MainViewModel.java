@@ -17,9 +17,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.MetadataChanges;
+import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainViewModel extends ViewModel {
@@ -132,8 +134,8 @@ public class MainViewModel extends ViewModel {
         return currentUser;
     }
 
-    public static void setCurrentUser(User currentUser) {
-        MainViewModel.currentUser = currentUser;
+    public static void setCurrentUser(User user) {
+        MainViewModel.currentUser = user;
     }
 
     public DocumentReference getUserDocRef() {
@@ -148,7 +150,7 @@ public class MainViewModel extends ViewModel {
         return currentFirebaseUser;
     }
 
-    public void setCurrentFirebaseUser(FirebaseUser mCurrentUser) {
-        this.currentFirebaseUser = mCurrentUser;
+    public void setCurrentFirebaseUser(FirebaseUser user) {
+        this.currentFirebaseUser = user;
     }
 }

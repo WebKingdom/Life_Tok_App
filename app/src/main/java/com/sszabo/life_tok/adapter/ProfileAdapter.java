@@ -17,44 +17,33 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
-import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
+public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder> {
+
+    private User curUser = MainViewModel.getCurrentUser();
+    private Context context;
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-
-        // inflate custom layout
-        View profileView = inflater.inflate(R.layout.profile_info_row, parent, false);
-
-        // return new view holder instance
-        ViewHolder viewHolder = new ViewHolder(profileView);
-        return viewHolder;
+    public ProfileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        context = parent.getContext();
+        return new ProfileViewHolder(LayoutInflater.from(context).inflate(R.layout.profile_info_row, parent, false));
     }
 
-    // populate data into the item through holder
+    // populate data into the view item through the holder
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        User curUser = MainViewModel.getCurrentUser();
-
+    public void onBindViewHolder(@NonNull ProfileViewHolder holder, int position) {
         holder.usernameText.setText(curUser.getUsername());
         holder.numFollowingText.setText(Integer.toString(curUser.getFollowing().size()));
         holder.numFollowersText.setText(Integer.toString(curUser.getFollowers().size()));
     }
 
-    private void getUserData(ViewHolder holder) {
+    private void getUserData(ProfileViewHolder holder) {
         FirebaseUser fUser = FirebaseUtil.getAuth().getCurrentUser();
-        User curUser = MainViewModel.getCurrentUser();
 
         FirebaseUtil.getFirestore().collection("users").document(fUser.getUid()).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -62,6 +51,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             try {
+                                curUser = task.getResult().toObject(User.class);
                                 DocumentSnapshot document = task.getResult();
                                 curUser.setFollowers((List<String>) document.get("followers"));
                                 curUser.setFollowing((List<String>) document.get("following"));
@@ -91,18 +81,18 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         return 1;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+
+    public class ProfileViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView profileImageView;
         private TextView usernameText;
         private TextView numFollowersText;
         private TextView numFollowingText;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ProfileViewHolder(@NonNull View itemView) {
             super(itemView);
-
             profileImageView = itemView.findViewById(R.id.profileImageView);
-            usernameText = itemView.findViewById(R.id.txt_username);
+            usernameText = itemView.findViewById(R.id.txt_post_name);
             numFollowersText = itemView.findViewById(R.id.txtNumFollowers);
             numFollowingText = itemView.findViewById(R.id.txtNumFollowing);
         }

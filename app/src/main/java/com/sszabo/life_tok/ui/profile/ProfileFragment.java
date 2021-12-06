@@ -27,6 +27,8 @@ public class ProfileFragment extends Fragment {
     private ProfileViewModel profileViewModel;
     private FragmentProfileBinding binding;
 
+    private RecyclerView rvProfile;
+
     // TODO create adapter for recyclerview and
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -38,11 +40,10 @@ public class ProfileFragment extends Fragment {
         setHasOptionsMenu(true);
 
         // look up recycler view in profile
-        RecyclerView rvProfile = (RecyclerView) root.findViewById(R.id.recyclerViewProfile);
+        rvProfile = (RecyclerView) root.findViewById(R.id.recyclerViewProfile);
         // TODO pass in User argument when creating adapter?
-        ProfileAdapter adapter = new ProfileAdapter();
         // attach adapter to recycler view to populate items
-        rvProfile.setAdapter(adapter);
+        rvProfile.setAdapter(new ProfileAdapter());
 
         rvProfile.setLayoutManager(new LinearLayoutManager(this.getContext()));
 

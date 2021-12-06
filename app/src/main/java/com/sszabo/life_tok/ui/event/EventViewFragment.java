@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -51,7 +51,6 @@ public class EventViewFragment extends Fragment {
     private ImageButton btnLocationMap;
 
     private Event event;
-    private MediaController mediaController;
 
     @Nullable
     @Override
@@ -74,14 +73,18 @@ public class EventViewFragment extends Fragment {
         if (event.isPicture()) {
             videoView.setVisibility(View.INVISIBLE);
             imageView.setVisibility(View.VISIBLE);
-        } else {
-            mediaController = new MediaController(getContext());
-            mediaController.setAnchorView(videoView);
-
-            videoView.setMediaController(mediaController);
         }
 
         setListeners();
+
+        // set up back button press action
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                navToMapFragment();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         return root;
     }
@@ -100,21 +103,21 @@ public class EventViewFragment extends Fragment {
                     File temp = null;
                     try {
                         // write to temporary file
-                        temp = File.createTempFile(event.getUserId(), ".mp4");
-                        temp.deleteOnExit();
+                        File outputDir = getContext().getCacheDir();
+                        temp = File.createTempFile(event.getId(), ".mp4", outputDir);
                         FileOutputStream fos = new FileOutputStream(temp);
                         fos.write(task.getResult());
-
-                    } catch (IOException e) {
+                        temp.deleteOnExit();
+                    } catch (IOException | NullPointerException e) {
                         e.printStackTrace();
                     }
 
                     if (temp != null) {
                         if (event.isPicture()) {
-                            // TODO display picture
+                            // display picture
                             imageView.setImageURI(Uri.fromFile(temp));
                         } else {
-                            // TODO display video
+                            // display video
                             videoView.setVideoPath(temp.getAbsolutePath());
                             videoView.start();
                         }
@@ -154,7 +157,7 @@ public class EventViewFragment extends Fragment {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 // restart video playback
-                videoView.start();
+                mp.start();
             }
         });
 

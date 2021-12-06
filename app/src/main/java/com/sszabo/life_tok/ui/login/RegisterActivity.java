@@ -17,11 +17,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.DocumentReference;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
-import com.sszabo.life_tok.util.Resources;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -61,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
         txtEmail = findViewById(R.id.txt_email);
         txtPhone = findViewById(R.id.txt_phone);
         txtAddress = findViewById(R.id.txt_address);
-        txtUsername = findViewById(R.id.txt_username);
+        txtUsername = findViewById(R.id.txt_post_name);
         txtPassword = findViewById(R.id.txt_password);
         txtConfirmPassword = findViewById(R.id.txt_confirm_password);
         btnCreateAccount = findViewById(R.id.btn_create_account);

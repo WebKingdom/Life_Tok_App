@@ -12,8 +12,9 @@ public class Event implements Serializable {
     private String username;
     private String name;
     private String description;
+    private int numLikes;
     private String mediaUrl;
-    // TODO use picture/thumbnail only when not video. Otherwise save thumbnail pic for video
+    // TODO use picture/thumbnail for profile picture?
     private String thumbnailUrl;
     private boolean isPicture;
 
@@ -26,7 +27,7 @@ public class Event implements Serializable {
     private String locationName;
     private Timestamp timestamp;
 
-    public Event(String id, String userId, String username, String name, String description, String mediaUrl,
+    public Event(String id, String userId, String username, String name, String description, int likes, String mediaUrl,
                  String thumbnailUrl, boolean isPicture, int eventType, GeoPoint geoPoint, String locationName,
                  Timestamp timestamp) {
         this.id = id;
@@ -34,19 +35,7 @@ public class Event implements Serializable {
         this.username = username;
         this.name = name;
         this.description = description;
-        this.mediaUrl = mediaUrl;
-        this.thumbnailUrl = thumbnailUrl;
-        this.isPicture = isPicture;
-        this.eventType = eventType;
-        this.geoPoint = geoPoint;
-        this.locationName = locationName;
-        this.timestamp = timestamp;
-    }
-
-    public Event(String name, String description, String mediaUrl, String thumbnailUrl, boolean isPicture,
-                 int eventType, GeoPoint geoPoint, String locationName, Timestamp timestamp) {
-        this.name = name;
-        this.description = description;
+        this.numLikes = likes;
         this.mediaUrl = mediaUrl;
         this.thumbnailUrl = thumbnailUrl;
         this.isPicture = isPicture;
@@ -100,6 +89,14 @@ public class Event implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getNumLikes() {
+        return numLikes;
+    }
+
+    public void setNumLikes(int likes) {
+        this.numLikes = likes;
     }
 
     public String getMediaUrl() {

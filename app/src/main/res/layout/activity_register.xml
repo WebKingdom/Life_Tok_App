@@ -102,7 +102,7 @@
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/txt_username"
+                android:id="@+id/txt_post_name"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_margin="16dp"

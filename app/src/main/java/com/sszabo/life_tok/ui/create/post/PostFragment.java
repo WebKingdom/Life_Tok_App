@@ -343,6 +343,7 @@ public class PostFragment extends Fragment {
                 MainViewModel.getCurrentUser().getUsername(),
                 eventName,
                 eventDescription,
+                0,
                 stoRef.toString(),
                 "",
                 isPicture,
@@ -389,25 +390,28 @@ public class PostFragment extends Fragment {
             });
         } else {
             // private event upload
-            FirebaseUtil.getFirestore()
+            docRef = FirebaseUtil.getFirestore()
                     .collection("users")
                     .document(uid)
                     .collection("events")
-                    .add(event)
-                    .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentReference> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getContext(), "Uploaded event", Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.INVISIBLE);
-                                navToCreateFragment();
-                            } else {
-                                Toast.makeText(getContext(), "Error uploading event", Toast.LENGTH_SHORT).show();
-                                deleteMediaFromDB(stoRef);
-                                Objects.requireNonNull(task.getException()).printStackTrace();
-                            }
-                        }
-                    });
+                    .document();
+
+            event.setId(docRef.getId());
+
+            docRef.set(event).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(getContext(), "Uploaded event", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.INVISIBLE);
+                        navToCreateFragment();
+                    } else {
+                        Toast.makeText(getContext(), "Error uploading event", Toast.LENGTH_SHORT).show();
+                        deleteMediaFromDB(stoRef);
+                        Objects.requireNonNull(task.getException()).printStackTrace();
+                    }
+                }
+            });
         }
     }
 

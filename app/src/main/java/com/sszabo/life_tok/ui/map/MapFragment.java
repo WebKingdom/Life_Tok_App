@@ -55,7 +55,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
     private static final String TAG = MapFragment.class.getSimpleName();
 
     private static final float DEFAULT_ZOOM = 12;
-    private static final float CLOSE_ZOOM = 18;
+    private static final float CLOSE_ZOOM = 16;
 
     private MapViewModel mapViewModel;
     private FragmentMapBinding binding;
@@ -300,9 +300,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                     }
                 });
 
-        // get all private events of followers
+        // get all private events of followers including private events of current user (yourself)
         ArrayList<Event> tempEventList = new ArrayList<>();
-        for (String id : curUser.getFollowing()) {
+        ArrayList<String> listUIDs = (ArrayList<String>) curUser.getFollowing();
+        listUIDs.add(curUser.getId());
+
+        for (String id : listUIDs) {
             FirebaseUtil.getFirestore()
                     .collection("users")
                     .document(id)
@@ -322,6 +325,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                         }
                     });
         }
+        listUIDs.remove(curUser.getId());
     }
 
     /**
