@@ -81,18 +81,18 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             }
         });
 
-        holder.videoPlayer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!eventsList.get(holder.getAbsoluteAdapterPosition()).isPicture() && isPlaying) {
-                    holder.videoPlayer.pause();
-                    isPlaying = false;
-                } else if (!eventsList.get(holder.getAbsoluteAdapterPosition()).isPicture()) {
-                    holder.videoPlayer.resume();
-                    isPlaying = true;
-                }
-            }
-        });
+//        holder.videoPlayer.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (!eventsList.get(holder.getAbsoluteAdapterPosition()).isPicture() && isPlaying) {
+//                    holder.videoPlayer.pause();
+//                    isPlaying = false;
+//                } else if (!eventsList.get(holder.getAbsoluteAdapterPosition()).isPicture()) {
+//                    holder.videoPlayer.resume();
+//                    isPlaying = true;
+//                }
+//            }
+//        });
 
         holder.videoPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override

@@ -118,7 +118,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         btnRefreshMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getPublicAndFollowingEvents();
+                getPublicAndPrivateEvents();
             }
         });
     }
@@ -133,22 +133,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // search events by name, description, or location
-                ArrayList<Event> events = new ArrayList<>();
+                ArrayList<Event> searchEvents = new ArrayList<>();
                 for (Event event : eventsList) {
                     if (event.contains(query.toLowerCase())) {
-                        events.add(event);
+                        searchEvents.add(event);
                     }
                 }
 
-                if (events.isEmpty()) {
+                if (searchEvents.isEmpty()) {
                     Toast.makeText(getContext(), "No events found", Toast.LENGTH_SHORT).show();
                     return false;
                 }
                 // clear markers and display only searched ones
                 mGoogleMap.clear();
-                displayEvents(events);
-                LatLng curCoord = new LatLng(events.get(0).getGeoPoint().getLatitude(),
-                        events.get(0).getGeoPoint().getLongitude());
+                displayEvents(searchEvents);
+                LatLng curCoord = new LatLng(searchEvents.get(0).getGeoPoint().getLatitude(),
+                        searchEvents.get(0).getGeoPoint().getLongitude());
                 mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curCoord, DEFAULT_ZOOM));
                 return false;
             }
@@ -234,7 +234,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         mGoogleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapstyle_life_tok));
 
         // get and display event locations
-        getPublicAndFollowingEvents();
+        getPublicAndPrivateEvents();
 
         if (getArguments() != null) {
             // Navigated from home page or event view to here with event selected
@@ -278,7 +278,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
      * Gets and marks all public and following user events on the map.
      * Clears all markers and the eventList before setting any new markers
      */
-    private void getPublicAndFollowingEvents() {
+    private void getPublicAndPrivateEvents() {
         mGoogleMap.clear();
         eventsList.clear();
         User curUser = MainViewModel.getCurrentUser();
@@ -293,39 +293,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                         if (task.isSuccessful()) {
                             // add marker for event on map
                             eventsList.addAll(task.getResult().toObjects(Event.class));
-                            displayEvents(eventsList);
+
+                            // get all private events of followers including private events of current user (yourself)
+                            ArrayList<Event> tempEventList = new ArrayList<>();
+                            ArrayList<String> listUIDs = (ArrayList<String>) curUser.getFollowing();
+                            listUIDs.add(curUser.getId());
+
+                            for (int i = 0; i < listUIDs.size(); i++) {
+                                int finalIndex = i;
+                                FirebaseUtil.getFirestore()
+                                        .collection("users")
+                                        .document(listUIDs.get(i))
+                                        .collection("events")
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    // add marker for events on map accounting for index
+                                                    if (finalIndex == 0) {
+                                                        eventsList.addAll(task.getResult().toObjects(Event.class));
+                                                        displayEvents(eventsList, 0);
+                                                    } else {
+                                                        tempEventList.clear();
+                                                        tempEventList.addAll(task.getResult().toObjects(Event.class));
+                                                        displayEvents(tempEventList, eventsList.size());
+                                                        eventsList.addAll(tempEventList);
+                                                    }
+                                                } else {
+                                                    Toast.makeText(getContext(), "Error finding following event", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                            }
+                            listUIDs.remove(curUser.getId());
                         } else {
                             Toast.makeText(getContext(), "Error finding public events", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-
-        // get all private events of followers including private events of current user (yourself)
-        ArrayList<Event> tempEventList = new ArrayList<>();
-        ArrayList<String> listUIDs = (ArrayList<String>) curUser.getFollowing();
-        listUIDs.add(curUser.getId());
-
-        for (String id : listUIDs) {
-            FirebaseUtil.getFirestore()
-                    .collection("users")
-                    .document(id)
-                    .collection("events")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                // add marker for event on map
-                                tempEventList.addAll(task.getResult().toObjects(Event.class));
-                                eventsList.addAll(tempEventList);
-                                displayEvents(tempEventList);
-                            } else {
-                                Toast.makeText(getContext(), "Error finding following event", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-        }
-        listUIDs.remove(curUser.getId());
     }
 
     /**
@@ -343,6 +349,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                     .title(e.getName())
                     .alpha(0.7f)
                     .zIndex(i)
+                    .snippet(owner));
+        }
+    }
+
+    /**
+     * Shows the list of events as markers on the map
+     *
+     * @param list
+     * @param startZIndex starting index for the markers
+     */
+    private void displayEvents(ArrayList<Event> list, int startZIndex) {
+        for (int i = 0; i < list.size(); i++) {
+            Event e = list.get(i);
+            String owner = "@" + e.getUsername();
+            LatLng pos = new LatLng(e.getGeoPoint().getLatitude(), e.getGeoPoint().getLongitude());
+            mGoogleMap.addMarker(new MarkerOptions()
+                    .position(pos)
+                    .title(e.getName())
+                    .alpha(0.7f)
+                    .zIndex(i + startZIndex)
                     .snippet(owner));
         }
     }

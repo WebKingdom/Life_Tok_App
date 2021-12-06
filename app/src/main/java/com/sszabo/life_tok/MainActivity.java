@@ -31,6 +31,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (FirebaseUtil.getAuth().getCurrentUser() == null) {
+            Log.d(TAG, "onStart: Starting login");
+
+            launchLoginActivity();
+            finish();
+            return;
+        }
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -67,13 +75,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        if (FirebaseUtil.getAuth().getCurrentUser() == null) {
-            Log.d(TAG, "onStart: Starting login");
-
-            launchLoginActivity();
-            return;
-        }
 
         // TODO? start listening to Firestore updates
         FirebaseUtil.addAuthListener();
