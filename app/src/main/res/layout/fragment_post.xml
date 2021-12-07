@@ -17,6 +17,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:id="@+id/image_view_post"
+                android:layout_width="wrap_content"
+                android:layout_height="400dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/video_view_post"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <VideoView
                 android:id="@+id/video_view_post"
                 android:layout_width="wrap_content"
@@ -26,18 +38,6 @@
                 android:layout_marginBottom="8dp"
                 android:visibility="visible"
                 app:layout_constraintBottom_toTopOf="@id/txt_event_name_post"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/image_view_post"
-                android:layout_width="wrap_content"
-                android:layout_height="400dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/video_view_post"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

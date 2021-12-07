@@ -20,7 +20,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.sszabo.life_tok.MainViewModel;
@@ -32,6 +35,8 @@ import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 
 public class HomeFragment extends Fragment {
 
@@ -86,49 +91,41 @@ public class HomeFragment extends Fragment {
         // TODO cache events or add snapshot listeners so we don't always have to restart query
         eventsList.clear();
 
+        // get private following user events
+        ArrayList<Task<QuerySnapshot>> eventTasks = new ArrayList<>();
         for (String id : listUIDs) {
-            FirebaseUtil.getFirestore()
+            eventTasks.add(FirebaseUtil.getFirestore()
                     .collection("users")
                     .document(id)
                     .collection("events")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                eventsList.addAll(task.getResult().toObjects(Event.class));
+                    .get());
 
-                                // get public events for the people you follow as well
-                                FirebaseUtil.getFirestore()
-                                        .collection("publicEvents")
-                                        .whereEqualTo("userId", id)
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    // complete with all requests, set up ViewPager
-                                                    eventsList.addAll(task.getResult().toObjects(Event.class));
-                                                    feedAdapter = new FeedAdapter(eventsList, initGlide());
-                                                    feedViewPager.setAdapter(feedAdapter);
-                                                } else {
-                                                    Toast.makeText(getContext(), "Could not get events for user: " + id, Toast.LENGTH_SHORT).show();
-                                                }
-
-                                                // set up visibility
-                                                if (eventsList.isEmpty()) {
-                                                    txtFeedMessage.setVisibility(View.VISIBLE);
-                                                } else {
-                                                    txtFeedMessage.setVisibility(View.INVISIBLE);
-                                                }
-                                            }
-                                        });
-                            } else {
-                                Toast.makeText(getContext(), "Could not get events for user: " + id, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+            eventTasks.add(FirebaseUtil.getFirestore()
+                    .collection("publicEvents")
+                    .whereEqualTo("userId", id)
+                    .get());
         }
+
+        Tasks.whenAllComplete(eventTasks).addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+            @Override
+            public void onComplete(@NonNull Task<List<Task<?>>> task) {
+                if (task.isSuccessful()) {
+                    for (Task<?> t : task.getResult()) {
+                        eventsList.addAll( ((QuerySnapshot) t.getResult()).toObjects(Event.class) );
+                    }
+                    feedAdapter = new FeedAdapter(eventsList, initGlide());
+                    feedViewPager.setAdapter(feedAdapter);
+                } else {
+                    Toast.makeText(getContext(), "Could not get all events for user", Toast.LENGTH_SHORT).show();
+                }
+                // set up visibility
+                if (eventsList.isEmpty()) {
+                    txtFeedMessage.setVisibility(View.VISIBLE);
+                } else {
+                    txtFeedMessage.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
     }
 
     @Override

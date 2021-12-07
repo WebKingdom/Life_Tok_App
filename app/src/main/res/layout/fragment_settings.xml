@@ -1,14 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.settings.SettingsFragment"
-    android:background="@color/black">
+    android:background="@color/black"
+    tools:context=".ui.settings.SettingsFragment">
 
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/title_settings" />
+        android:orientation="vertical">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_profile_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="60dp"
+                android:text="@string/edit_profile"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="40sp" />
+
+            <EditText
+                android:id="@+id/txt_firstName_settings"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:autofillHints="name"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_text_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/prompt_fName"
+                android:inputType="textAutoCorrect"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/txt_lastName_settings"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:autofillHints="name"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_text_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/prompt_lName"
+                android:inputType="textAutoCorrect"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/txt_phone_settings"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:autofillHints="phone"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_text_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/prompt_phone"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp"
+                tools:ignore="TextFields" />
+
+            <EditText
+                android:id="@+id/txt_address_settings"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:autofillHints="postalAddress"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_location_btn"
+                android:drawablePadding="10dp"
+                android:hint="@string/prompt_address"
+                android:inputType="textPostalAddress"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/txt_username_settings"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:autofillHints="username"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_text_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/prompt_username"
+                android:inputType="textAutoCorrect"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/txt_email_settings"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:autofillHints="emailAddress"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_email_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/prompt_email"
+                android:inputType="textEmailAddress"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/txt_password_settings"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:autofillHints="password"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_pass_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/prompt_password"
+                android:inputType="textPassword"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/txt_confirm_password_settings"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:autofillHints="password"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_pass_input"
+                android:drawablePadding="10dp"
+                android:hint="@string/prompt_confirm_password"
+                android:inputType="textPassword"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="20sp" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar_settings"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@android:color/white"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/btn_update_profile_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/update_profile"
+                android:textSize="25sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

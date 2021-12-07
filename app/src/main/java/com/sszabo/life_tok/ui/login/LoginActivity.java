@@ -6,6 +6,7 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -13,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,8 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText txtEmail;
     private EditText txtPassword;
     private CheckBox chkShowPassword;
-    private AppCompatButton btnLogin;
-    private AppCompatButton btnSignUp;
+    private Button btnLogin;
+    private Button btnSignUp;
     private ProgressBar progressBarLogin;
 
     @Override
@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!setAndVerifyFields()) {
-                    Toast.makeText(LoginActivity.this, "Invalid credentials", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -104,12 +104,12 @@ public class LoginActivity extends AppCompatActivity {
 
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Logging in",
-                                    Toast.LENGTH_LONG).show();
+                                    Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onComplete: Login success");
                             launchMainActivity();
                         } else {
                             Toast.makeText(LoginActivity.this, "Invalid credentials",
-                                    Toast.LENGTH_LONG).show();
+                                    Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onComplete: Login failed");
                         }
                     }

@@ -7,12 +7,13 @@ public class User {
     private String id;
     private String firstName;
     private String lastName;
+    private String username;
 
     private String email;
     private String address;
     private String phoneNo;
 
-    private String username;
+    private String pictureUrl;
 
     /**
      * List of public event IDs
@@ -43,7 +44,8 @@ public class User {
      * @param followers
      */
     public User(String id, String firstName, String lastName, String username, String email, String address,
-                String phoneNo, List<String> publicEventIds, List<String> following, List<String> followers) {
+                String phoneNo, String pictureUrl, List<String> publicEventIds, List<String> following,
+                List<String> followers) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -51,6 +53,7 @@ public class User {
         this.email = email;
         this.address = address;
         this.phoneNo = phoneNo;
+        this.pictureUrl = pictureUrl;
         this.publicEventIds = publicEventIds;
         this.following = following;
         this.followers = followers;
@@ -139,6 +142,14 @@ public class User {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
+    }
+
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 
     public List<String> getPublicEventIds() {

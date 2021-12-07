@@ -45,10 +45,10 @@
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/drawable/outline_add_circle_24.xml" value="0.3255208333333333" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.33046875" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout-w936dp/activity_login.xml" value="0.3921875" />
-        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_login.xml" value="0.260343087790111" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_login.xml" value="0.2143467122117848" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_login2.xml" value="0.5229166666666667" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_main.xml" value="0.2532795156407669" />
-        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_register.xml" value="0.260343087790111" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/activity_register.xml" value="0.2143467122117848" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/fragment_create.xml" value="0.2532795156407669" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/fragment_dashboard.xml" value="0.2532795156407669" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/fragment_event_view.xml" value="0.23233695652173914" />
@@ -58,6 +58,7 @@
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/fragment_prof.xml" value="0.2532795156407669" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/fragment_profile.xml" value="0.2532795156407669" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/fragment_profile_temp.xml" value="0.2532795156407669" />
+        <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/fragment_settings.xml" value="0.22032450896669514" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/layout_feed.xml" value="0.44035087719298244" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/layout/profile_info_row.xml" value="0.1692982456140351" />
         <entry key="..\:/Users/somas/Documents/GitHub/Life_Tok_App/app/src/main/res/menu/bottom_nav_menu.xml" value="0.30520833333333336" />

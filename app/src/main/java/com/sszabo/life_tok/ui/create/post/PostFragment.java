@@ -2,15 +2,12 @@ package com.sszabo.life_tok.ui.create.post;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaPlayer;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +17,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -33,17 +29,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.StorageReference;
@@ -59,7 +51,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -80,7 +71,6 @@ public class PostFragment extends Fragment {
     private EditText txtEventLocation;
     private VideoView videoView;
     private ImageView imageView;
-    private MediaController mediaController;
 
     private String eventName;
     private String eventDescription;
@@ -131,7 +121,7 @@ public class PostFragment extends Fragment {
                         if (allGranted) {
                             Log.d(TAG, "onActivityResult: All permissions granted");
                         } else {
-                            Toast.makeText(getContext(), "Must enable permissions for functionality", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Enable permissions for functionality", Toast.LENGTH_SHORT).show();
                             onPause();
                             onStop();
                         }
@@ -145,10 +135,6 @@ public class PostFragment extends Fragment {
             imageView.setImageURI(Uri.fromFile(new File(filePath)));
         } else {
             // video file
-            mediaController = new MediaController(getContext());
-            mediaController.setAnchorView(videoView);
-
-            videoView.setMediaController(mediaController);
             videoView.setVideoPath(filePath);
             videoView.start();
         }
@@ -186,7 +172,7 @@ public class PostFragment extends Fragment {
         for (String permission : permissions) {
             if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
                 // permission not granted return
-                Toast.makeText(getContext(), "Must enable permissions for functionality ", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Enable permissions for functionality ", Toast.LENGTH_SHORT).show();
                 onPause();
                 onStop();
                 return;
@@ -217,7 +203,7 @@ public class PostFragment extends Fragment {
                     // Display location in edit text
                     txtEventLocation.setText(searchAddr.get(0).getAddressLine(0));
                 } else {
-                    Toast.makeText(getContext(), "Unable to get location. Try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Unable to get location. Try again.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -258,8 +244,10 @@ public class PostFragment extends Fragment {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     // user edited text, must get location
-                    if (!setAndVerifyFields()) {
-                        Toast.makeText(getContext(), "Invalid fields!", Toast.LENGTH_LONG).show();
+                    eventLocation = txtEventLocation.getText().toString();
+                    if (eventLocation.isEmpty()) {
+                        txtEventLocation.setError("Required field");
+                        Toast.makeText(getContext(), "Invalid fields!", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -302,7 +290,7 @@ public class PostFragment extends Fragment {
     private void postEvent() {
         txtEventLocation.clearFocus();
         if (!setAndVerifyFields()) {
-            Toast.makeText(getContext(), "Invalid fields!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Invalid fields!", Toast.LENGTH_SHORT).show();
             return;
         }
         progressBar.setVisibility(View.VISIBLE);
@@ -332,7 +320,8 @@ public class PostFragment extends Fragment {
 
     /**
      * Uploads the event object to Firestore and updates the public event list field for users if the event is public
-     * @param uid User ID
+     *
+     * @param uid    User ID
      * @param stoRef Storage Reference to the media
      */
     private void uploadEventObject(String uid, StorageReference stoRef) {
@@ -417,6 +406,7 @@ public class PostFragment extends Fragment {
 
     /**
      * Deletes the media file from Firebase Storage and makes the progress bar invisible
+     *
      * @param ref the storage reference to the media
      */
     private void deleteMediaFromDB(StorageReference ref) {

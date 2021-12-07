@@ -77,6 +77,7 @@ public class MainViewModel extends ViewModel {
                                 email,
                                 snapshot.get("address").toString(),
                                 snapshot.get("phoneNo").toString(),
+                                snapshot.get("pictureUrl").toString(),
                                 (List<String>) snapshot.get("publicEventIds"),
                                 (List<String>) snapshot.get("following"),
                                 (List<String>) snapshot.get("followers"));

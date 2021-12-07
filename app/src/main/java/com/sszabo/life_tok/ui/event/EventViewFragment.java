@@ -4,6 +4,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -77,14 +78,17 @@ public class EventViewFragment extends Fragment {
 
         setListeners();
 
+        // required for top back button functionality
+        setHasOptionsMenu(true);
+
         // set up back button press action
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+        OnBackPressedCallback backPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 navToMapFragment();
             }
         };
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), backPressedCallback);
 
         return root;
     }
@@ -168,6 +172,16 @@ public class EventViewFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void navToMapFragment() {

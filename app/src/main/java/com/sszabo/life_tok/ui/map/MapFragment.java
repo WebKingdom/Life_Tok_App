@@ -36,8 +36,11 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
@@ -48,6 +51,7 @@ import com.sszabo.life_tok.util.FirebaseUtil;
 import com.sszabo.life_tok.util.Resources;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -96,7 +100,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                         if (allGranted) {
                             Log.d(TAG, "onActivityResult: All permissions granted");
                         } else {
-                            Toast.makeText(getContext(), "Must enable permissions for functionality", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Enable permissions for functionality", Toast.LENGTH_SHORT).show();
                             onPause();
                             onStop();
                         }
@@ -224,7 +228,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         for (String permission : permissions) {
             if (ActivityCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
                 // permission not granted, return
-                Toast.makeText(getContext(), "Must enable permissions for functionality ", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Enable permissions for functionality ", Toast.LENGTH_SHORT).show();
                 onPause();
                 onStop();
                 return;
@@ -294,39 +298,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                             // add marker for event on map
                             eventsList.addAll(task.getResult().toObjects(Event.class));
 
-                            // get all private events of followers including private events of current user (yourself)
-                            ArrayList<Event> tempEventList = new ArrayList<>();
-                            ArrayList<String> listUIDs = (ArrayList<String>) curUser.getFollowing();
-                            listUIDs.add(curUser.getId());
-
-                            for (int i = 0; i < listUIDs.size(); i++) {
-                                int finalIndex = i;
-                                FirebaseUtil.getFirestore()
+                            // get all private events of followers
+                            ArrayList<Task<QuerySnapshot>> privateEventTasks = new ArrayList<>();
+                            for (String id : curUser.getFollowing()) {
+                                privateEventTasks.add(FirebaseUtil.getFirestore()
                                         .collection("users")
-                                        .document(listUIDs.get(i))
+                                        .document(id)
                                         .collection("events")
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    // add marker for events on map accounting for index
-                                                    if (finalIndex == 0) {
-                                                        eventsList.addAll(task.getResult().toObjects(Event.class));
-                                                        displayEvents(eventsList, 0);
-                                                    } else {
-                                                        tempEventList.clear();
-                                                        tempEventList.addAll(task.getResult().toObjects(Event.class));
-                                                        displayEvents(tempEventList, eventsList.size());
-                                                        eventsList.addAll(tempEventList);
-                                                    }
-                                                } else {
-                                                    Toast.makeText(getContext(), "Error finding following event", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
+                                        .get());
                             }
-                            listUIDs.remove(curUser.getId());
+
+                            // include private events of current user (yourself)
+                            privateEventTasks.add(FirebaseUtil.getFirestore()
+                                    .collection("users")
+                                    .document(curUser.getId())
+                                    .collection("events")
+                                    .get());
+
+                            Tasks.whenAllComplete(privateEventTasks).addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+                                @Override
+                                public void onComplete(@NonNull Task<List<Task<?>>> task) {
+                                    if (task.isSuccessful()) {
+                                        for (Task<?> t : task.getResult()) {
+                                            eventsList.addAll( ((QuerySnapshot) t.getResult()).toObjects(Event.class) );
+                                        }
+                                        displayEvents(eventsList);
+                                    } else {
+                                        Toast.makeText(getContext(), "Error finding following event", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                         } else {
                             Toast.makeText(getContext(), "Error finding public events", Toast.LENGTH_SHORT).show();
                         }
@@ -349,26 +350,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                     .title(e.getName())
                     .alpha(0.7f)
                     .zIndex(i)
-                    .snippet(owner));
-        }
-    }
-
-    /**
-     * Shows the list of events as markers on the map
-     *
-     * @param list
-     * @param startZIndex starting index for the markers
-     */
-    private void displayEvents(ArrayList<Event> list, int startZIndex) {
-        for (int i = 0; i < list.size(); i++) {
-            Event e = list.get(i);
-            String owner = "@" + e.getUsername();
-            LatLng pos = new LatLng(e.getGeoPoint().getLatitude(), e.getGeoPoint().getLongitude());
-            mGoogleMap.addMarker(new MarkerOptions()
-                    .position(pos)
-                    .title(e.getName())
-                    .alpha(0.7f)
-                    .zIndex(i + startZIndex)
                     .snippet(owner));
         }
     }

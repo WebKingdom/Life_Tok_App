@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout0"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
@@ -12,12 +11,10 @@
     tools:context=".ui.login.LoginActivity">
 
     <ScrollView
-        android:id="@+id/scrollView0"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -77,24 +74,20 @@
                 android:text="@string/show_password"
                 android:textColor="@android:color/white" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <Button
                 android:id="@+id/btn_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:background="@color/royal_blue"
                 android:text="@string/login"
-                android:textColor="@color/white"
                 android:textSize="25sp" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <Button
                 android:id="@+id/btn_sign_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="@color/royal_blue"
                 android:text="@string/sign_up"
-                android:textColor="@color/white"
                 android:textSize="25sp" />
 
             <ProgressBar

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout0"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
@@ -10,12 +9,10 @@
     tools:context=".ui.login.RegisterActivity">
 
     <ScrollView
-        android:id="@+id/scrollView0"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -91,7 +88,7 @@
                 android:layout_margin="16dp"
                 android:autofillHints="postalAddress"
                 android:background="@drawable/custom_input"
-                android:drawableStart="@drawable/custom_text_input"
+                android:drawableStart="@drawable/custom_location_btn"
                 android:drawablePadding="10dp"
                 android:hint="@string/prompt_address"
                 android:inputType="textPostalAddress"
@@ -102,7 +99,7 @@
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/txt_post_name"
+                android:id="@+id/txt_username"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_margin="16dp"
@@ -180,14 +177,12 @@
                 android:indeterminateTint="@android:color/white"
                 android:visibility="invisible" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <Button
                 android:id="@+id/btn_create_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:background="@color/royal_blue"
                 android:text="@string/create_account"
-                android:textColor="@color/white"
                 android:textSize="25sp" />
 
         </LinearLayout>

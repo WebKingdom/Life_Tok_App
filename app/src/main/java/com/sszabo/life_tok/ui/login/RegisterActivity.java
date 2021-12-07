@@ -3,13 +3,13 @@ package com.sszabo.life_tok.ui.login;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText txtUsername;
     private EditText txtPassword;
     private EditText txtConfirmPassword;
-    private AppCompatButton btnCreateAccount;
+    private Button btnCreateAccount;
     private ProgressBar progressBarRegister;
 
     @Override
@@ -59,11 +59,12 @@ public class RegisterActivity extends AppCompatActivity {
         txtEmail = findViewById(R.id.txt_email);
         txtPhone = findViewById(R.id.txt_phone);
         txtAddress = findViewById(R.id.txt_address);
-        txtUsername = findViewById(R.id.txt_post_name);
+        txtUsername = findViewById(R.id.txt_username);
         txtPassword = findViewById(R.id.txt_password);
         txtConfirmPassword = findViewById(R.id.txt_confirm_password);
         btnCreateAccount = findViewById(R.id.btn_create_account);
         progressBarRegister = findViewById(R.id.progress_bar_register);
+        progressBarRegister.setVisibility(View.INVISIBLE);
 
         setUIListeners();
     }
@@ -76,14 +77,13 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!setAndVerifyFields()) {
-                    Toast.makeText(RegisterActivity.this, "Invalid fields!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this, "Invalid fields!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 // create account on both databases (auth and Firestore)
                 progressBarRegister.setVisibility(View.VISIBLE);
                 registerUser();
-                progressBarRegister.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -106,6 +106,7 @@ public class RegisterActivity extends AppCompatActivity {
                     FirebaseUser currentUser = fAuth.getCurrentUser();
                     Log.d(TAG, "onComplete: User auth added with ID: " + currentUser.getUid());
 
+                    // TODO add picture to profile on create account
                     User user = new User(
                             currentUser.getUid(),
                             firstName,
@@ -114,6 +115,7 @@ public class RegisterActivity extends AppCompatActivity {
                             email,
                             address,
                             phone,
+                            "",
                             new ArrayList<>(0),
                             new ArrayList<>(0),
                             new ArrayList<>(0)
@@ -142,13 +144,14 @@ public class RegisterActivity extends AppCompatActivity {
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
+                                    progressBarRegister.setVisibility(View.INVISIBLE);
+
                                     if (task.isSuccessful()) {
                                         Toast.makeText(RegisterActivity.this, "Success",
                                                 Toast.LENGTH_SHORT).show();
                                         Log.d(TAG, "onSuccess: User added with ID: " + user.getId() +
                                                 " result: " + task.getResult());
                                         setResult(RESULT_OK);
-                                        progressBarRegister.setVisibility(View.INVISIBLE);
                                         finish();
                                     } else {
                                         Toast.makeText(RegisterActivity.this,

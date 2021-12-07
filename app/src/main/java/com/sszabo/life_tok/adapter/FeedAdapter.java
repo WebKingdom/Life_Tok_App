@@ -124,6 +124,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                     }
 
                     if (temp != null) {
+                        if (!temp.exists()) {
+                            // TODO
+                        }
                         if (event.isPicture()) {
                             // display picture
                             holder.videoPlayer.setVisibility(View.INVISIBLE);

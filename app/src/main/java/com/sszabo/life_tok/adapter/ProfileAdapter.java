@@ -70,10 +70,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
                         }
                     }
                 });
-
-        FirebaseUtil.getFirestore().collection("users").document(fUser.getUid())
-                .collection("events")
-                .whereEqualTo("name", "Event 1 name");
     }
 
     @Override

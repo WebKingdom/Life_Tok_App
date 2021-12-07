@@ -170,6 +170,10 @@ public class Event implements Serializable {
             return true;
         }
 
+        if (this.username.toLowerCase().contains(query)) {
+            return true;
+        }
+
         return this.locationName.toLowerCase().contains(query);
     }
 }

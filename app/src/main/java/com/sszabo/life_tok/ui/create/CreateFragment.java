@@ -96,7 +96,7 @@ public class CreateFragment extends Fragment {
                             // can now take photo or video
                             Log.d(TAG, "onActivityResult: All permissions granted");
                         } else {
-                            Toast.makeText(getContext(), "Must enable permission for functionality", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Enable permission for functionality", Toast.LENGTH_SHORT).show();
                             onPause();
                             onStop();
                         }

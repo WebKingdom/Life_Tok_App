@@ -26,7 +26,6 @@
     <string name="welcome">Welcome</string>
     <string name="register">Register</string>
 
-    <string name="edit_profile">Edit Profile</string>
     <string name="profile_picture">Profile Picture</string>
     <string name="followers">Followers</string>
     <string name="following">Following</string>
@@ -49,4 +48,6 @@
     <string name="get_from_gallery">Get From Gallery</string>
     <string name="event_media">Event Media</string>
     <string name="no_posts_from_followers">No posts from followers</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="update_profile">Update Profile</string>
 </resources>
