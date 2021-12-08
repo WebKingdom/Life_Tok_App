@@ -61,6 +61,15 @@ public class HomeFragment extends Fragment {
         feedViewPager = binding.feedViewPager;
         txtFeedMessage = binding.txtFeedMessage;
 
+        setHasOptionsMenu(true);
+
+        return root;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
         if (MainViewModel.getCurrentUser() == null) {
             String uid = FirebaseUtil.getAuth().getCurrentUser().getUid();
             FirebaseUtil.getFirestore()
@@ -81,10 +90,6 @@ public class HomeFragment extends Fragment {
         } else {
             getFollowingUserEvents((ArrayList<String>) MainViewModel.getCurrentUser().getFollowing());
         }
-
-        setHasOptionsMenu(true);
-
-        return root;
     }
 
     private void getFollowingUserEvents(ArrayList<String> listUIDs) {

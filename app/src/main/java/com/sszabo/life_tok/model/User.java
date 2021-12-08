@@ -1,6 +1,7 @@
 package com.sszabo.life_tok.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class User {
 
@@ -174,5 +175,15 @@ public class User {
 
     public void setFollowers(List<String> followers) {
         this.followers = followers;
+    }
+
+    public boolean userEquals(User user) {
+        return  this.firstName.equals(user.getFirstName()) &&
+                this.lastName.equals(user.getLastName()) &&
+                this.username.equals(user.getUsername()) &&
+                this.email.equals(user.getEmail()) &&
+                this.address.equals(user.getAddress()) &&
+                this.phoneNo.equals(user.getPhoneNo()) &&
+                this.pictureUrl.equals(user.getPictureUrl());
     }
 }

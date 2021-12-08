@@ -183,6 +183,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:text="@string/create_account"
+                android:textAllCaps="false"
                 android:textSize="25sp" />
 
         </LinearLayout>

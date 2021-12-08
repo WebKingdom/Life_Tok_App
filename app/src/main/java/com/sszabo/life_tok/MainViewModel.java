@@ -50,6 +50,7 @@ public class MainViewModel extends ViewModel {
         currentFirebaseUser = FirebaseUtil.getAuth().getCurrentUser();
         userDocRef = FirebaseUtil.getFirestore().collection("users").document(currentFirebaseUser.getUid());
 
+        // listen to Firestore user data changes
         userDocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException error) {
@@ -95,11 +96,16 @@ public class MainViewModel extends ViewModel {
         return success;
     }
 
+    /**
+     * Updates the data in the authentication repository if the data in Firestore changed
+     * @param username
+     * @param email
+     */
     private void updateUserDataAuth(String username, String email) {
         FirebaseUser usr = FirebaseUtil.getAuth().getCurrentUser();
 
         if (!usr.getDisplayName().equals(username)) {
-            // update username of in authentication db
+            // update username in authentication db
             UserProfileChangeRequest updates = new UserProfileChangeRequest
                     .Builder()
                     .setDisplayName(username)

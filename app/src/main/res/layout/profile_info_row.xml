@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/profileCardView"
+        android:id="@+id/card_view_profile"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -20,12 +20,12 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/profileImageView"
+            android:id="@+id/image_view_profile"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:contentDescription="@string/title_profile"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_baseline_lock_24" />
+            android:src="@drawable/ic_outline_add_a_photo_24" />
     </androidx.cardview.widget.CardView>
 
     <TextView
@@ -42,13 +42,13 @@
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/txtNumFollowers"
+        app:layout_constraintBottom_toTopOf="@+id/txt_num_followers"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profileCardView"
+        app:layout_constraintStart_toEndOf="@+id/card_view_profile"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtNumFollowers"
+        android:id="@+id/txt_num_followers"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
@@ -56,13 +56,13 @@
         android:layout_marginBottom="4dp"
         android:gravity="center"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/txtFollowers"
-        app:layout_constraintEnd_toStartOf="@+id/txtNumFollowing"
+        app:layout_constraintBottom_toTopOf="@+id/txt_followers"
+        app:layout_constraintEnd_toStartOf="@+id/txt_num_following"
         app:layout_constraintStart_toStartOf="@+id/txt_post_name"
         app:layout_constraintTop_toBottomOf="@+id/txt_post_name" />
 
     <TextView
-        android:id="@+id/txtFollowers"
+        android:id="@+id/txt_followers"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="4dp"
@@ -74,25 +74,25 @@
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/txtFollowing"
+        app:layout_constraintEnd_toStartOf="@+id/txt_following"
         app:layout_constraintStart_toStartOf="@+id/txt_post_name"
-        app:layout_constraintTop_toBottomOf="@id/txtNumFollowers" />
+        app:layout_constraintTop_toBottomOf="@id/txt_num_followers" />
 
     <TextView
-        android:id="@+id/txtNumFollowing"
+        android:id="@+id/txt_num_following"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/txtNumFollowers"
-        app:layout_constraintTop_toTopOf="@id/txtNumFollowers"
-        app:layout_constraintStart_toEndOf="@+id/txtNumFollowers"
+        app:layout_constraintBottom_toBottomOf="@+id/txt_num_followers"
+        app:layout_constraintTop_toTopOf="@id/txt_num_followers"
+        app:layout_constraintStart_toEndOf="@+id/txt_num_followers"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
         android:gravity="center"/>
 
     <TextView
-        android:id="@+id/txtFollowing"
+        android:id="@+id/txt_following"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -105,6 +105,6 @@
         android:textColorHint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/txtFollowers"
-        app:layout_constraintTop_toTopOf="@+id/txtFollowers" />
+        app:layout_constraintStart_toEndOf="@+id/txt_followers"
+        app:layout_constraintTop_toTopOf="@+id/txt_followers" />
 </androidx.constraintlayout.widget.ConstraintLayout>

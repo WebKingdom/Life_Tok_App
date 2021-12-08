@@ -18,9 +18,9 @@
     <string name="prompt_lName">Last Name</string>
     <string name="prompt_username">Username</string>
 
-    <string name="sign_up">Sign up</string>
-    <string name="sign_in">Sign in</string>
-    <string name="login">Log in</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="login">Log In</string>
     <string name="create_account">Create Account</string>
     <string name="show_password">Show Password</string>
     <string name="welcome">Welcome</string>
@@ -36,7 +36,7 @@
 
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >6 characters and not contain white space</string>
-    <string name="login_failed">Login failed</string>
+    <string name="login_failed">Login Failed</string>
     <string name="event_location">Event Location</string>
     <string name="event_description">Event Description</string>
     <string name="event_name">Event Name</string>
@@ -49,5 +49,5 @@
     <string name="event_media">Event Media</string>
     <string name="no_posts_from_followers">No posts from followers</string>
     <string name="edit_profile">Edit Profile</string>
-    <string name="update_profile">Update Profile</string>
+    <string name="update">Update</string>
 </resources>

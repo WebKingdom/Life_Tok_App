@@ -300,9 +300,7 @@ public class PostFragment extends Fragment {
         // upload file to Firebase Storage
         Uri file = Uri.fromFile(new File(filePath));
         String uploadPath = "userMedia/" + uid + "/" + file.getLastPathSegment();
-        StorageReference storageReference = FirebaseUtil.getStorage()
-                .getReference()
-                .child(uploadPath);
+        StorageReference storageReference = FirebaseUtil.getStorage().getReference(uploadPath);
 
         storageReference.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override

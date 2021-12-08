@@ -24,22 +24,20 @@ import java.util.List;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder> {
 
-    private User curUser = MainViewModel.getCurrentUser();
-    private Context context;
-
     @NonNull
     @Override
     public ProfileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext();
+        Context context = parent.getContext();
         return new ProfileViewHolder(LayoutInflater.from(context).inflate(R.layout.profile_info_row, parent, false));
     }
 
     // populate data into the view item through the holder
     @Override
     public void onBindViewHolder(@NonNull ProfileViewHolder holder, int position) {
-        holder.usernameText.setText(curUser.getUsername());
-        holder.numFollowingText.setText(Integer.toString(curUser.getFollowing().size()));
-        holder.numFollowersText.setText(Integer.toString(curUser.getFollowers().size()));
+        User user = MainViewModel.getCurrentUser();
+        holder.usernameText.setText(user.getUsername());
+        holder.numFollowingText.setText(Integer.toString(user.getFollowing().size()));
+        holder.numFollowersText.setText(Integer.toString(user.getFollowers().size()));
     }
 
     private void getUserData(ProfileViewHolder holder) {
@@ -51,14 +49,15 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             try {
-                                curUser = task.getResult().toObject(User.class);
+                                User user;
+                                user = task.getResult().toObject(User.class);
                                 DocumentSnapshot document = task.getResult();
-                                curUser.setFollowers((List<String>) document.get("followers"));
-                                curUser.setFollowing((List<String>) document.get("following"));
+                                user.setFollowers((List<String>) document.get("followers"));
+                                user.setFollowing((List<String>) document.get("following"));
 
-                                holder.usernameText.setText(curUser.getUsername());
-                                holder.numFollowingText.setText(Integer.toString(curUser.getFollowing().size()));
-                                holder.numFollowersText.setText(Integer.toString(curUser.getFollowers().size()));
+                                holder.usernameText.setText(user.getUsername());
+                                holder.numFollowingText.setText(Integer.toString(user.getFollowing().size()));
+                                holder.numFollowersText.setText(Integer.toString(user.getFollowers().size()));
                             } catch (Exception e) {
                                 Toast.makeText(holder.itemView.getContext(), "User data found in DB but null",
                                         Toast.LENGTH_LONG).show();
@@ -87,10 +86,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
 
         public ProfileViewHolder(@NonNull View itemView) {
             super(itemView);
-            profileImageView = itemView.findViewById(R.id.profileImageView);
+            profileImageView = itemView.findViewById(R.id.image_view_profile);
             usernameText = itemView.findViewById(R.id.txt_post_name);
-            numFollowersText = itemView.findViewById(R.id.txtNumFollowers);
-            numFollowingText = itemView.findViewById(R.id.txtNumFollowing);
+            numFollowersText = itemView.findViewById(R.id.txt_num_followers);
+            numFollowingText = itemView.findViewById(R.id.txt_num_following);
         }
     }
 }

@@ -108,7 +108,8 @@ public class EventViewFragment extends Fragment {
                     try {
                         // write to temporary file
                         File outputDir = getContext().getCacheDir();
-                        temp = File.createTempFile(event.getId(), ".mp4", outputDir);
+                        String suffix = event.isPicture() ? ".jpg" : ".mp4";
+                        temp = File.createTempFile(event.getId(), suffix, outputDir);
                         FileOutputStream fos = new FileOutputStream(temp);
                         fos.write(task.getResult());
                         temp.deleteOnExit();

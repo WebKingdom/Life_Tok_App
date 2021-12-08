@@ -10,23 +10,53 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/txt_profile_settings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="40dp"
-                android:layout_marginBottom="60dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="40dp"
                 android:text="@string/edit_profile"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="40sp" />
+                android:textSize="40sp"
+                app:layout_constraintBottom_toTopOf="@+id/card_view_profile_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_view_profile_settings"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:elevation="12dp"
+                app:cardCornerRadius="100dp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_firstName_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_profile_settings">
+
+                <ImageView
+                    android:id="@+id/image_view_profile"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:contentDescription="@string/title_profile"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_outline_add_a_photo_24" />
+            </androidx.cardview.widget.CardView>
 
             <EditText
                 android:id="@+id/txt_firstName_settings"
@@ -43,7 +73,11 @@
                 android:paddingEnd="10dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_grey"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_lastName_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/card_view_profile_settings" />
 
             <EditText
                 android:id="@+id/txt_lastName_settings"
@@ -60,7 +94,11 @@
                 android:paddingEnd="10dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_grey"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_phone_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_firstName_settings" />
 
             <EditText
                 android:id="@+id/txt_phone_settings"
@@ -79,6 +117,10 @@
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_grey"
                 android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_address_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_lastName_settings"
                 tools:ignore="TextFields" />
 
             <EditText
@@ -96,7 +138,11 @@
                 android:paddingEnd="10dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_grey"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_username_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_phone_settings" />
 
             <EditText
                 android:id="@+id/txt_username_settings"
@@ -113,7 +159,11 @@
                 android:paddingEnd="10dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_grey"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_email_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_address_settings" />
 
             <EditText
                 android:id="@+id/txt_email_settings"
@@ -130,7 +180,11 @@
                 android:paddingEnd="10dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_grey"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_password_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_username_settings" />
 
             <EditText
                 android:id="@+id/txt_password_settings"
@@ -147,7 +201,11 @@
                 android:paddingEnd="10dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_grey"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_confirm_password_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_email_settings" />
 
             <EditText
                 android:id="@+id/txt_confirm_password_settings"
@@ -164,28 +222,58 @@
                 android:paddingEnd="10dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/dark_grey"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/progress_bar_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_password_settings" />
 
             <ProgressBar
                 android:id="@+id/progress_bar_settings"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_margin="16dp"
                 android:indeterminate="true"
                 android:indeterminateTint="@android:color/white"
-                android:visibility="invisible" />
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/btn_update_profile_settings"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_confirm_password_settings" />
+
+            <Button
+                android:id="@+id/btn_delete_profile_settings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="32dp"
+                android:backgroundTint="@color/indian_red"
+                android:text="@string/delete"
+                android:textAllCaps="false"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_update_profile_settings"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btn_update_profile_settings" />
 
             <Button
                 android:id="@+id/btn_update_profile_settings"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:text="@string/update_profile"
-                android:textSize="25sp" />
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"
+                android:text="@string/update"
+                android:textAllCaps="false"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_delete_profile_settings"
+                app:layout_constraintTop_toBottomOf="@+id/progress_bar_settings" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

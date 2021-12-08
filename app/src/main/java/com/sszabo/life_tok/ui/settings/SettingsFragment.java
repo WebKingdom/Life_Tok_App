@@ -1,37 +1,58 @@
 package com.sszabo.life_tok.ui.settings;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.sszabo.life_tok.MainViewModel;
-import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentSettingsBinding;
 import com.sszabo.life_tok.model.User;
-import com.sszabo.life_tok.ui.login.RegisterActivity;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO add delete profile and edit profile picture
 public class SettingsFragment extends Fragment {
+
+    private static final String TAG = SettingsViewModel.class.getSimpleName();
 
     private SettingsViewModel settingsViewModel;
     private FragmentSettingsBinding binding;
+
+    private ActivityResultLauncher<Intent> activityResultLauncher;
+    private Uri picUri;
 
     private String firstName;
     private String lastName;
@@ -40,7 +61,9 @@ public class SettingsFragment extends Fragment {
     private String address;
     private String username;
     private String password;
+    private String pictureUrl;
 
+    private ImageView profPic;
     private EditText txtFirstName;
     private EditText txtLastName;
     private EditText txtEmail;
@@ -50,6 +73,7 @@ public class SettingsFragment extends Fragment {
     private EditText txtPassword;
     private EditText txtConfirmPassword;
     private Button btnUpdateProfile;
+    private Button btnDeleteProfile;
     private ProgressBar progressBarSettings;
 
     @Override
@@ -63,23 +87,46 @@ public class SettingsFragment extends Fragment {
         // required for top back button functionality
         setHasOptionsMenu(true);
 
+        picUri = null;
+        pictureUrl = "";
+
+        profPic = binding.imageViewProfile;
         txtFirstName = binding.txtFirstNameSettings;
         txtLastName = binding.txtLastNameSettings;
         txtEmail = binding.txtEmailSettings;
         txtPhone = binding.txtPhoneSettings;
         txtAddress = binding.txtAddressSettings;
         txtUsername = binding.txtUsernameSettings;
-        txtPassword = binding.txtPasswordSettings;;
+        txtPassword = binding.txtPasswordSettings;
+
         txtConfirmPassword = binding.txtConfirmPasswordSettings;
         btnUpdateProfile = binding.btnUpdateProfileSettings;
+        btnDeleteProfile = binding.btnDeleteProfileSettings;
         progressBarSettings = binding.progressBarSettings;
         progressBarSettings.setVisibility(View.INVISIBLE);
 
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getData() != null) {
+                    settingsViewModel.setProfPicUpdated(true);
+                    picUri = result.getData().getData();
+                    profPic.setImageURI(picUri);
+                } else {
+                    Log.d(TAG, "onActivityResult: Could not get profile picture Uri");
+                }
+            }
+        });
+
         setUIListeners();
 
-        getAndSetUserData();
-
         return root;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getAndSetUserData();
     }
 
     @Override
@@ -93,6 +140,9 @@ public class SettingsFragment extends Fragment {
     }
 
     private void setUIListeners() {
+        User user = MainViewModel.getCurrentUser();
+        String uid = user.getId();
+
         btnUpdateProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,17 +151,272 @@ public class SettingsFragment extends Fragment {
                     return;
                 }
                 progressBarSettings.setVisibility(View.VISIBLE);
+
+                // user data update tasks list
+                ArrayList<Task<Void>> updateTasks = new ArrayList<>();
+
+                // delete and upload profile picture to storage
+                if (settingsViewModel.isProfPicUpdated()) {
+                    String url = user.getPictureUrl();
+                    if (url != null && !url.isEmpty()) {
+                        FirebaseUtil.getStorage()
+                                .getReferenceFromUrl(url)
+                                .delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "onComplete: Old profile picture deleted");
+                                        } else {
+                                            Log.d(TAG, "onComplete: Could not delete old profile picture");
+                                        }
+                                    }
+                                });
+                    }
+                    // upload new profile picture
+                    String uploadPath = "userMedia/" + uid + "/" + picUri.getLastPathSegment();
+                    StorageReference stoRef = FirebaseUtil.getStorage().getReference(uploadPath);
+
+                    stoRef.putFile(picUri)
+                            .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        pictureUrl = stoRef.toString();
+
+                                        updateTasks.add(FirebaseUtil.getFirestore()
+                                                .collection("users")
+                                                .document(uid)
+                                                .update("pictureUrl", pictureUrl));
+                                        Log.d(TAG, "onComplete: Uploaded profile picture");
+                                    } else {
+                                        Toast.makeText(getContext(), "Could not upload profile picture", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
+
+                updateTasks.add(FirebaseUtil.getFirestore()
+                        .collection("users")
+                        .document(uid)
+                        .update("firstName", firstName));
+
+                updateTasks.add(FirebaseUtil.getFirestore()
+                        .collection("users")
+                        .document(uid)
+                        .update("lastName", lastName));
+
+                updateTasks.add(FirebaseUtil.getFirestore()
+                        .collection("users")
+                        .document(uid)
+                        .update("username", username));
+
+                updateTasks.add(FirebaseUtil.getFirestore()
+                        .collection("users")
+                        .document(uid)
+                        .update("email", email));
+
+                updateTasks.add(FirebaseUtil.getFirestore()
+                        .collection("users")
+                        .document(uid)
+                        .update("address", address));
+
+                updateTasks.add(FirebaseUtil.getFirestore()
+                        .collection("users")
+                        .document(uid)
+                        .update("phoneNo", phone));
+
+                updateTasks.add(FirebaseUtil.getAuth().getCurrentUser().updateEmail(email));
+                updateTasks.add(FirebaseUtil.getAuth().getCurrentUser().updatePassword(password));
+
+                UserProfileChangeRequest updates = new UserProfileChangeRequest
+                        .Builder()
+                        .setDisplayName(username)
+                        .build();
+                updateTasks.add(FirebaseUtil.getAuth().getCurrentUser().updateProfile(updates));
+
+                Tasks.whenAllComplete(updateTasks).addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<List<Task<?>>> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getContext(), "Updated profile", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "Could not profile", Toast.LENGTH_SHORT).show();
+                        }
+                        progressBarSettings.setVisibility(View.INVISIBLE);
+                        settingsViewModel.setProfPicUpdated(false);
+                        getAndSetUserData();
+                    }
+                });
+            }
+        });
+
+        btnDeleteProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO delete profile with all posts
+                if (true) {
+                    Toast.makeText(getContext(), "Nothing happened", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // delete all media
+                FirebaseUtil.getStorage()
+                        .getReference("userMedia/" + uid)
+                        .delete()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getContext(), "Deleted media", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getContext(), "Could not delete media", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                // TODO delete all events
+                FirebaseUtil.getFirestore()
+                        .collection("publicEvents")
+                        .whereEqualTo("userId", uid)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    QuerySnapshot qs = task.getResult();
+
+                                    Toast.makeText(getContext(), "Deleted public posts", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getContext(), "Could not delete public posts", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+
+                // TODO delete user
+                FirebaseUtil.getFirestore()
+                        .collection("users")
+                        .document(uid)
+                        .delete()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    // TODO delete follower IDs
+                                    FirebaseUtil.getFirestore()
+                                            .collection("users")
+                                            .whereArrayContains("followers", uid)
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+
+                                                    } else {
+
+                                                    }
+                                                }
+                                            });
+
+                                    // TODO delete following IDs
+                                    FirebaseUtil.getFirestore()
+                                            .collection("users")
+                                            .whereArrayContains("following", uid)
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+
+                                                    } else {
+
+                                                    }
+                                                }
+                                            });
+
+                                    Toast.makeText(getContext(), "Deleted user", Toast.LENGTH_SHORT).show();
+                                } else {
+
+                                }
+                            }
+                        });
+
+                // TODO delete auth
+                FirebaseUtil.getAuth()
+                        .getCurrentUser()
+                        .delete()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+
+                                } else {
+
+                                }
+                            }
+                        });
+            }
+        });
+
+        profPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // browse gallery for profile pic
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                activityResultLauncher.launch(intent);
             }
         });
     }
 
     private void getAndSetUserData() {
-        txtFirstName.setText(MainViewModel.getCurrentUser().getFirstName());
-        txtLastName.setText(MainViewModel.getCurrentUser().getLastName());
-        txtEmail.setText(MainViewModel.getCurrentUser().getEmail());
-        txtPhone.setText(MainViewModel.getCurrentUser().getPhoneNo());
-        txtAddress.setText(MainViewModel.getCurrentUser().getAddress());
-        txtUsername.setText(MainViewModel.getCurrentUser().getUsername());
+        User user = MainViewModel.getCurrentUser();
+
+        txtFirstName.setText(user.getFirstName());
+        txtLastName.setText(user.getLastName());
+        txtEmail.setText(user.getEmail());
+        txtPhone.setText(user.getPhoneNo());
+        txtAddress.setText(user.getAddress());
+        txtUsername.setText(user.getUsername());
+
+        // get profile picture
+        final long TEN_MEGABYTE = 10 * 1024 * 1024;
+
+        String url = user.getPictureUrl();
+        if (url == null || url.isEmpty() || settingsViewModel.isProfPicUpdated()) {
+            return;
+        }
+
+        StorageReference ref = FirebaseUtil.getStorage().getReferenceFromUrl(url);
+        ref.getBytes(TEN_MEGABYTE).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+            @Override
+            public void onComplete(@NonNull Task<byte[]> task) {
+                if (task.isSuccessful()) {
+                    File temp = null;
+                    try {
+                        // write to temporary file
+                        File outputDir = getContext().getCacheDir();
+                        temp = File.createTempFile(user.getId(), ".jpg", outputDir);
+                        FileOutputStream fos = new FileOutputStream(temp);
+                        fos.write(task.getResult());
+                        temp.deleteOnExit();
+                    } catch (IOException | NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (temp != null) {
+                        // display picture
+                        if (!settingsViewModel.isProfPicUpdated()) {
+                            profPic.setImageURI(Uri.fromFile(temp));
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Temporary profile picture save failed", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Could not get profile picture", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override

@@ -132,7 +132,9 @@ public class CreateFragment extends Fragment {
 
         Preview preview = new Preview.Builder().build();
 
-        imageCapture = new ImageCapture.Builder().build();
+        imageCapture = new ImageCapture.Builder()
+                .setMaxResolution(new Size (1920, 1080))
+                .build();
 
         videoCapture = new VideoCapture.Builder()
                 .setVideoFrameRate(30)
