@@ -1,6 +1,7 @@
 package com.sszabo.life_tok.ui.settings;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -25,14 +26,18 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.databinding.FragmentSettingsBinding;
+import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
@@ -254,47 +259,98 @@ public class SettingsFragment extends Fragment {
         btnDeleteProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO delete profile with all posts
-                if (true) {
-                    Toast.makeText(getContext(), "Nothing happened", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                // delete followers & following IDs from array of other users
+                CollectionReference userRef = FirebaseUtil.getFirestore().collection("users");
+                ArrayList<Task<QuerySnapshot>> deleteTasks = new ArrayList<>();
+                deleteTasks.add(userRef.whereArrayContains("followers", uid).get());
+                deleteTasks.add(userRef.whereArrayContains("following", uid).get());
 
-                // delete all media
-                FirebaseUtil.getStorage()
-                        .getReference("userMedia/" + uid)
-                        .delete()
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getContext(), "Deleted media", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getContext(), "Could not delete media", Toast.LENGTH_SHORT).show();
+                Tasks.whenAllComplete(deleteTasks).addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<List<Task<?>>> task) {
+                        if (task.isSuccessful()) {
+                            for (Task<?> t : task.getResult()) {
+                                for (QueryDocumentSnapshot snapshot : (QuerySnapshot) t.getResult()) {
+                                    ArrayList<String> followers = (ArrayList<String>) snapshot.toObject(User.class).getFollowers();
+                                    ArrayList<String> following = (ArrayList<String>) snapshot.toObject(User.class).getFollowing();
+                                    followers.remove(uid);
+                                    following.remove(uid);
+
+                                    userRef.document(snapshot.getId()).update("followers", followers).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(getContext(), "Could not delete follower IDs", Toast.LENGTH_SHORT).show();
+                                            e.printStackTrace();
+                                        }
+                                    });
+
+                                    userRef.document(snapshot.getId()).update("following", following).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(getContext(), "Could not delete following IDs", Toast.LENGTH_SHORT).show();
+                                            e.printStackTrace();
+                                        }
+                                    });
                                 }
                             }
-                        });
+                        } else {
+                            Toast.makeText(getContext(), "Could not get follower/following IDs", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
-                // TODO delete all events
-                FirebaseUtil.getFirestore()
-                        .collection("publicEvents")
-                        .whereEqualTo("userId", uid)
-                        .get()
+                // delete public events
+                CollectionReference publicEventRef = FirebaseUtil.getFirestore().collection("publicEvents");
+                publicEventRef.whereEqualTo("userId", uid).get()
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 if (task.isSuccessful()) {
-                                    QuerySnapshot qs = task.getResult();
+                                    for (QueryDocumentSnapshot snapshot : task.getResult()) {
+                                        Event event = snapshot.toObject(Event.class);
+                                        deleteSingleMedia(event.getMediaUrl());
 
-                                    Toast.makeText(getContext(), "Deleted public posts", Toast.LENGTH_SHORT).show();
+                                        publicEventRef.document(snapshot.getId()).delete()
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(getContext(), "Could not delete public event", Toast.LENGTH_SHORT).show();
+                                                        e.printStackTrace();
+                                                    }
+                                                });
+                                    }
                                 } else {
-                                    Toast.makeText(getContext(), "Could not delete public posts", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "Could not get public events", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
 
+                // delete private events of/within user (delete the "events" collection)
+                CollectionReference privateEventRef = FirebaseUtil.getFirestore()
+                        .collection("users")
+                        .document(uid)
+                        .collection("events");
 
-                // TODO delete user
+                privateEventRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot snapshot : task.getResult()) {
+                            Event event = snapshot.toObject(Event.class);
+                            deleteSingleMedia(event.getMediaUrl());
+
+                            privateEventRef.document(snapshot.getId()).delete()
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(getContext(), "Could not delete private event", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    }
+                });
+
+                // delete user & profile pic
+                deleteSingleMedia(user.getPictureUrl());
                 FirebaseUtil.getFirestore()
                         .collection("users")
                         .document(uid)
@@ -303,46 +359,14 @@ public class SettingsFragment extends Fragment {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    // TODO delete follower IDs
-                                    FirebaseUtil.getFirestore()
-                                            .collection("users")
-                                            .whereArrayContains("followers", uid)
-                                            .get()
-                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                    if (task.isSuccessful()) {
-
-                                                    } else {
-
-                                                    }
-                                                }
-                                            });
-
-                                    // TODO delete following IDs
-                                    FirebaseUtil.getFirestore()
-                                            .collection("users")
-                                            .whereArrayContains("following", uid)
-                                            .get()
-                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                    if (task.isSuccessful()) {
-
-                                                    } else {
-
-                                                    }
-                                                }
-                                            });
-
-                                    Toast.makeText(getContext(), "Deleted user", Toast.LENGTH_SHORT).show();
+                                    Log.d(TAG, "onComplete: Deleted user");
                                 } else {
-
+                                    Toast.makeText(getContext(), "Could not delete user", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
 
-                // TODO delete auth
+                // delete auth
                 FirebaseUtil.getAuth()
                         .getCurrentUser()
                         .delete()
@@ -350,9 +374,10 @@ public class SettingsFragment extends Fragment {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-
+                                    Log.d(TAG, "onComplete: Deleted auth");
+                                    FirebaseUtil.getAuth().signOut();
                                 } else {
-
+                                    Toast.makeText(getContext(), "Could not delete auth", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -367,6 +392,39 @@ public class SettingsFragment extends Fragment {
                 activityResultLauncher.launch(intent);
             }
         });
+    }
+
+    /**
+     * Deletes a singe piece of media based from Firebase Storage at the provided URL.
+     * @param url the location to delete
+     */
+    private void deleteSingleMedia(String url) {
+        FirebaseUtil.getStorage()
+                .getReferenceFromUrl(url)
+                .delete()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), "Could not delete media", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // Firebase Storage does not allow for folder to be deleted... Must be done 1 by 1
+    private void deleteAllUserMedia(String uid) {
+        FirebaseUtil.getStorage()
+                .getReference("userMedia/" + uid)
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: Deleted media");
+                        } else {
+                            Toast.makeText(getContext(), "Could not delete media", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     private void getAndSetUserData() {
