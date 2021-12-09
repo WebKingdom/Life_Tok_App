@@ -76,14 +76,6 @@ public class ProfileFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-//        final TextView textView = rvProfile.findViewById(R.id.txt_username);
-//        profileViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
-
         return root;
     }
 
@@ -111,7 +103,7 @@ public class ProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        final long TEN_MEGABYTE = 100 * 1024 * 1024;
+        final long TEN_MEGABYTE = 10 * 1024 * 1024;
         User user = MainViewModel.getCurrentUser();
         StorageReference ref = FirebaseUtil.getStorage().getReferenceFromUrl(user.getPictureUrl());
         ref.getBytes(TEN_MEGABYTE).addOnCompleteListener(new OnCompleteListener<byte[]>() {

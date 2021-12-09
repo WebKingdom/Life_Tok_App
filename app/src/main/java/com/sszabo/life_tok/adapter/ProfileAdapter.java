@@ -1,15 +1,19 @@
 package com.sszabo.life_tok.adapter;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -59,11 +63,23 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
         holder.txtEventName.setText(eventsList.get(position).getName());
         holder.txtEventDescription.setText(eventsList.get(position).getDescription());
         holder.txtEventLocation.setText(eventsList.get(position).getLocationName());
+        holder.progressBar.setVisibility(View.VISIBLE);
 
         holder.btnEventDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO delete event
+            }
+        });
+
+        holder.eventVideoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (holder.eventVideoView.isPlaying()) {
+                    holder.eventVideoView.pause();
+                } else {
+                    holder.eventVideoView.start();
+                }
             }
         });
 
@@ -82,10 +98,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
                     try {
                         // write to temporary file
                         File outputDir = context.getCacheDir();
-                        temp = File.createTempFile(event.getId(), ".mp4", outputDir);
+                        String suffix = event.isPicture() ? ".jpg" : ".mp4";
+                        temp = File.createTempFile(event.getId(), suffix, outputDir);
                         FileOutputStream fos = new FileOutputStream(temp);
                         fos.write(task.getResult());
-                        temp.deleteOnExit();
                     } catch (IOException | NullPointerException e) {
                         e.printStackTrace();
                     }
@@ -93,25 +109,29 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
                     if (temp != null) {
                         if (!temp.exists()) {
                             // TODO
+                            Log.d(TAG, "onComplete: Temp file does not exist! Create new one?");
                         }
                         if (event.isPicture()) {
                             // display picture
                             holder.eventVideoView.setVisibility(View.INVISIBLE);
                             holder.eventImageView.setVisibility(View.VISIBLE);
-//                            holder.progressBar.setVisibility(View.INVISIBLE);
+                            holder.progressBar.setVisibility(View.INVISIBLE);
                             holder.eventImageView.setImageURI(Uri.fromFile(temp));
                         } else {
                             // display video
                             holder.eventVideoView.setVisibility(View.VISIBLE);
                             holder.eventImageView.setVisibility(View.INVISIBLE);
-//                            holder.progressBar.setVisibility(View.INVISIBLE);
-                            holder.eventVideoView.setVideoPath(temp.getAbsolutePath());
-//                            holder.eventVideoView.start();
+                            holder.progressBar.setVisibility(View.INVISIBLE);
+                            Uri uri = Uri.fromFile(temp);
+                            holder.eventVideoView.setVideoURI(uri);
+                            holder.eventVideoView.start();
                         }
+                        temp.deleteOnExit();
                     } else {
                         Toast.makeText(context, "Temporary media save failed", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "onComplete: Temporary media save failed");
                     }
+
                 } else {
                     Toast.makeText(context, "Could not get event media", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "onComplete: Could not get event media");
@@ -130,6 +150,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
 
         private ImageView eventImageView;
         private VideoView eventVideoView;
+        private ProgressBar progressBar;
         private TextView txtEventName;
         private TextView txtEventDescription;
         private TextView txtEventLocation;
@@ -139,6 +160,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
             super(itemView);
             eventImageView = itemView.findViewById(R.id.image_view_event_profile);
             eventVideoView = itemView.findViewById(R.id.video_view_event_profile);
+            progressBar = itemView.findViewById(R.id.progress_bar_profile);
             txtEventName = itemView.findViewById(R.id.txt_event_name_profile);
             txtEventDescription = itemView.findViewById(R.id.txt_event_description_profile);
             txtEventLocation = itemView.findViewById(R.id.txt_event_location_profile);

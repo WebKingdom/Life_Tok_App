@@ -38,12 +38,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     private RequestManager requestManager;
     private Context context;
 
-    private boolean isPlaying;
-
     public FeedAdapter(ArrayList<Event> events, RequestManager requestManager) {
         this.eventsList = events;
         this.requestManager = requestManager;
-        isPlaying = false;
     }
 
     @NonNull
@@ -77,22 +74,19 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mp.start();
-                isPlaying = true;
             }
         });
 
-//        holder.videoPlayer.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (!eventsList.get(holder.getAbsoluteAdapterPosition()).isPicture() && isPlaying) {
-//                    holder.videoPlayer.pause();
-//                    isPlaying = false;
-//                } else if (!eventsList.get(holder.getAbsoluteAdapterPosition()).isPicture()) {
-//                    holder.videoPlayer.resume();
-//                    isPlaying = true;
-//                }
-//            }
-//        });
+        holder.videoPlayer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!eventsList.get(holder.getAbsoluteAdapterPosition()).isPicture() && holder.videoPlayer.isPlaying()) {
+                    holder.videoPlayer.pause();
+                } else if (!eventsList.get(holder.getAbsoluteAdapterPosition()).isPicture()) {
+                    holder.videoPlayer.start();
+                }
+            }
+        });
 
         holder.videoPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
@@ -115,10 +109,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                     try {
                         // write to temporary file
                         File outputDir = context.getCacheDir();
-                        temp = File.createTempFile(event.getId(), ".mp4", outputDir);
+                        String suffix = event.isPicture() ? ".jpg" : ".mp4";
+                        temp = File.createTempFile(event.getId(), suffix, outputDir);
                         FileOutputStream fos = new FileOutputStream(temp);
                         fos.write(task.getResult());
-                        temp.deleteOnExit();
                     } catch (IOException | NullPointerException e) {
                         e.printStackTrace();
                     }
@@ -138,10 +132,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                             holder.videoPlayer.setVisibility(View.VISIBLE);
                             holder.imageView.setVisibility(View.INVISIBLE);
                             holder.progressBar.setVisibility(View.INVISIBLE);
-                            holder.videoPlayer.setVideoPath(temp.getAbsolutePath());
+                            Uri uri = Uri.fromFile(temp);
+                            holder.videoPlayer.setVideoURI(uri);
                             holder.videoPlayer.start();
-                            isPlaying = true;
                         }
+                        temp.deleteOnExit();
                     } else {
                         Toast.makeText(context, "Temporary media save failed", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "onComplete: Temporary media save failed");

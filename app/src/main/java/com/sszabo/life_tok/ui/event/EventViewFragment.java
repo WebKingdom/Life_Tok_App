@@ -112,7 +112,6 @@ public class EventViewFragment extends Fragment {
                         temp = File.createTempFile(event.getId(), suffix, outputDir);
                         FileOutputStream fos = new FileOutputStream(temp);
                         fos.write(task.getResult());
-                        temp.deleteOnExit();
                     } catch (IOException | NullPointerException e) {
                         e.printStackTrace();
                     }
@@ -123,9 +122,11 @@ public class EventViewFragment extends Fragment {
                             imageView.setImageURI(Uri.fromFile(temp));
                         } else {
                             // display video
-                            videoView.setVideoPath(temp.getAbsolutePath());
+                            Uri uri = Uri.fromFile(temp);
+                            videoView.setVideoURI(uri);
                             videoView.start();
                         }
+                        temp.deleteOnExit();
                     } else {
                         Toast.makeText(getContext(), "Temporary media save failed", Toast.LENGTH_SHORT).show();
                     }
@@ -163,6 +164,17 @@ public class EventViewFragment extends Fragment {
             public void onCompletion(MediaPlayer mp) {
                 // restart video playback
                 mp.start();
+            }
+        });
+
+        videoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoView.isPlaying()) {
+                    videoView.pause();
+                } else {
+                    videoView.start();
+                }
             }
         });
 

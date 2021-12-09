@@ -271,7 +271,18 @@ public class PostFragment extends Fragment {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 // restart video playback
-                videoView.start();
+                mp.start();
+            }
+        });
+
+        videoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoView.isPlaying()) {
+                    videoView.pause();
+                } else {
+                    videoView.start();
+                }
             }
         });
 

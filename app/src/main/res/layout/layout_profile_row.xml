@@ -28,6 +28,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ProgressBar
+        android:id="@+id/progress_bar_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@id/video_view_event_profile"
+        app:layout_constraintEnd_toEndOf="@id/video_view_event_profile"
+        app:layout_constraintStart_toStartOf="@id/video_view_event_profile"
+        app:layout_constraintTop_toTopOf="@id/video_view_event_profile" />
+
     <TextView
         android:id="@+id/txt_event_name_profile"
         android:layout_width="0dp"
