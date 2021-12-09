@@ -1,9 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    
+    <ImageView
+        android:id="@+id/image_view_event_profile"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toBottomOf="@id/video_view_event_profile"
+        app:layout_constraintEnd_toEndOf="@id/video_view_event_profile"
+        app:layout_constraintStart_toStartOf="@id/video_view_event_profile"
+        app:layout_constraintTop_toTopOf="@id/video_view_event_profile" />
+
+    <VideoView
+        android:id="@+id/video_view_event_profile"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/txt_event_name_profile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_event_name_profile"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="top"
+        android:maxWidth="200dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/txt_event_description_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/video_view_event_profile"
+        app:layout_constraintTop_toTopOf="@id/video_view_event_profile"
+        tools:text="Event name here" />
+
+    <TextView
+        android:id="@+id/txt_event_description_profile"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="top"
+        android:maxWidth="200dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/txt_event_location_profile"
+        app:layout_constraintEnd_toEndOf="@id/txt_event_name_profile"
+        app:layout_constraintStart_toStartOf="@id/txt_event_name_profile"
+        app:layout_constraintTop_toBottomOf="@+id/txt_event_name_profile"
+        tools:text="Event description here" />
+
+    <TextView
+        android:id="@+id/txt_event_location_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:gravity="bottom"
+        android:maxWidth="200dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_delete_event_profile"
+        app:layout_constraintEnd_toEndOf="@id/txt_event_name_profile"
+        app:layout_constraintStart_toStartOf="@id/txt_event_name_profile"
+        app:layout_constraintTop_toBottomOf="@+id/txt_event_description_profile"
+        tools:text="Event Location here" />
+
+    <ImageButton
+        android:id="@+id/btn_delete_event_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/black"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleX="2"
+        android:scaleY="2"
+        android:src="@drawable/ic_baseline_delete_24"
+        app:layout_constraintBottom_toBottomOf="@id/video_view_event_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@+id/video_view_event_profile"
+        app:layout_constraintTop_toBottomOf="@+id/txt_event_location_profile" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

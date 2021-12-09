@@ -55,7 +55,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
-        holder.txtPostName.setText(eventsList.get(position).getName());
+        holder.txtEventName.setText(eventsList.get(position).getName());
         holder.txtDescription.setText(eventsList.get(position).getDescription());
         holder.txtLocation.setText(eventsList.get(position).getLocationName());
         holder.txtNumLikes.setText(Integer.toString(eventsList.get(position).getNumLikes()));
@@ -165,7 +165,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         private VideoView videoPlayer;
         private ImageView imageView;
         private ProgressBar progressBar;
-        private TextView txtPostName;
+        private TextView txtEventName;
         private TextView txtDescription;
         private TextView txtLocation;
         private TextView txtNumLikes;
@@ -177,7 +177,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             videoPlayer = itemView.findViewById(R.id.player_view_feed);
             imageView = itemView.findViewById(R.id.image_view_feed);
             progressBar = itemView.findViewById(R.id.progress_bar_feed);
-            txtPostName = itemView.findViewById(R.id.txt_post_name);
+            txtEventName = itemView.findViewById(R.id.txt_post_name);
             txtDescription = itemView.findViewById(R.id.txt_post_description);
             txtLocation = itemView.findViewById(R.id.txt_post_location);
             txtNumLikes = itemView.findViewById(R.id.txt_num_likes);
