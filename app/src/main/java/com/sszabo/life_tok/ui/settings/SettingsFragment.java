@@ -399,6 +399,11 @@ public class SettingsFragment extends Fragment {
      * @param url the location to delete
      */
     private void deleteSingleMedia(String url) {
+        if (url == null || url.isEmpty()) {
+            Log.d(TAG, "deleteSingleMedia: media URL does not exist");
+            return;
+        }
+
         FirebaseUtil.getStorage()
                 .getReferenceFromUrl(url)
                 .delete()
@@ -438,13 +443,12 @@ public class SettingsFragment extends Fragment {
         txtUsername.setText(user.getUsername());
 
         // get profile picture
-        final long TEN_MEGABYTE = 10 * 1024 * 1024;
-
         String url = user.getPictureUrl();
         if (url == null || url.isEmpty() || settingsViewModel.isProfPicUpdated()) {
             return;
         }
 
+        final long TEN_MEGABYTE = 10 * 1024 * 1024;
         StorageReference ref = FirebaseUtil.getStorage().getReferenceFromUrl(url);
         ref.getBytes(TEN_MEGABYTE).addOnCompleteListener(new OnCompleteListener<byte[]>() {
             @Override

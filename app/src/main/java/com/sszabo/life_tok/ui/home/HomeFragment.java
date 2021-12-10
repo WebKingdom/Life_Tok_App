@@ -20,12 +20,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.sszabo.life_tok.LifeTokApplication;
 import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.adapter.FeedAdapter;
@@ -36,7 +36,7 @@ import com.sszabo.life_tok.util.FirebaseUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
@@ -116,7 +116,7 @@ public class HomeFragment extends Fragment {
             public void onComplete(@NonNull Task<List<Task<?>>> task) {
                 if (task.isSuccessful()) {
                     for (Task<?> t : task.getResult()) {
-                        eventsList.addAll( ((QuerySnapshot) t.getResult()).toObjects(Event.class) );
+                        eventsList.addAll(((QuerySnapshot) t.getResult()).toObjects(Event.class));
                     }
                     feedAdapter = new FeedAdapter(eventsList, initGlide());
                     feedViewPager.setAdapter(feedAdapter);
@@ -142,8 +142,42 @@ public class HomeFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // TODO search users to follow
-                return false;
+                // TODO try using executor on other listeners!
+                // search users to follow
+                if (query.isEmpty() || query.length() < 2) {
+                    Toast.makeText(getContext(), "Must search more than 1 letters", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                ArrayList<User> searchUsers = new ArrayList<>();
+                final String q = query.toLowerCase();
+                FirebaseUtil.getFirestore()
+                        .collection("users")
+                        .get()
+                        .addOnCompleteListener(((LifeTokApplication) getActivity().getApplication()).executorService,
+                                new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        for (QueryDocumentSnapshot snapshot : task.getResult()) {
+                                            User user = snapshot.toObject(User.class);
+                                            if (user.getUsername().toLowerCase().contains(q) ||
+                                                    user.getFirstName().toLowerCase().contains(q) ||
+                                                    user.getLastName().toLowerCase().contains(q) ||
+                                                    user.getEmail().toLowerCase().contains(q)) {
+                                                searchUsers.add(user);
+                                            }
+                                        }
+
+                                        if (searchUsers.isEmpty()) {
+                                            Toast.makeText(getContext(), "No users found", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+
+                                        displayUsers(searchUsers);
+                                    }
+                                });
+
+                return true;
             }
 
             @Override
@@ -151,6 +185,10 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    private void displayUsers(ArrayList<User> userList) {
+        // TODO show matched users
     }
 
     private RequestManager initGlide() {

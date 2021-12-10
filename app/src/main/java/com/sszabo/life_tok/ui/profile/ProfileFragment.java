@@ -103,8 +103,19 @@ public class ProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        final long TEN_MEGABYTE = 10 * 1024 * 1024;
         User user = MainViewModel.getCurrentUser();
+        txtUsername.setText(user.getUsername());
+        txtNumFollowers.setText(Integer.toString(user.getFollowers().size()));
+        txtNumFollowing.setText(Integer.toString(user.getFollowing().size()));
+        getMyEvents();
+
+        // get profile picture
+        String url = user.getPictureUrl();
+        if (url == null || url.isEmpty()) {
+            return;
+        }
+
+        final long TEN_MEGABYTE = 10 * 1024 * 1024;
         StorageReference ref = FirebaseUtil.getStorage().getReferenceFromUrl(user.getPictureUrl());
         ref.getBytes(TEN_MEGABYTE).addOnCompleteListener(new OnCompleteListener<byte[]>() {
             @Override
@@ -133,11 +144,6 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-
-        txtUsername.setText(MainViewModel.getCurrentUser().getUsername());
-        txtNumFollowers.setText(Integer.toString(user.getFollowers().size()));
-        txtNumFollowing.setText(Integer.toString(user.getFollowing().size()));
-        getMyEvents();
     }
 
     // get user's events

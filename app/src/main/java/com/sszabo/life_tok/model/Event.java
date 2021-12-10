@@ -161,7 +161,7 @@ public class Event implements Serializable {
      * @param query to search for
      * @return true if event contains query, false otherwise
      */
-    public boolean contains(String query) {
+    public boolean searchContains(String query) {
         if (this.name.toLowerCase().contains(query)) {
             return true;
         }

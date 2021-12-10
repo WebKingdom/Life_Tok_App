@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 public class EventViewFragment extends Fragment {
     private static final String TAG = EventViewFragment.class.getSimpleName();
@@ -47,6 +48,7 @@ public class EventViewFragment extends Fragment {
     private TextView txtEventUsername;
     private TextView txtEventDescription;
     private TextView txtEventLocation;
+    private TextView txtEventTime;
     private VideoView videoView;
     private ImageView imageView;
     private ImageButton btnLocationMap;
@@ -65,6 +67,7 @@ public class EventViewFragment extends Fragment {
         txtEventUsername = binding.txtEventViewUsername;
         txtEventDescription = binding.txtEventViewDescription;
         txtEventLocation = binding.txtEventViewLocation;
+        txtEventTime = binding.txtEventViewTime;
         videoView = binding.videoViewEvent;
         imageView = binding.imageViewEvent;
         btnLocationMap = binding.btnShowLocationMap;
@@ -140,6 +143,7 @@ public class EventViewFragment extends Fragment {
         txtEventUsername.setText("@" + event.getUsername());
         txtEventDescription.setText(event.getDescription());
         txtEventLocation.setText(event.getLocationName());
+        txtEventTime.setText(event.getTimestamp().toDate().toString());
     }
 
     @Override

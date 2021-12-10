@@ -36,11 +36,9 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
@@ -136,17 +134,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if (query.isEmpty() || query.length() < 2) {
+                    Toast.makeText(getContext(), "Must search more than 1 letters", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
                 // search events by name, description, or location
                 ArrayList<Event> searchEvents = new ArrayList<>();
                 for (Event event : eventsList) {
-                    if (event.contains(query.toLowerCase())) {
+                    if (event.searchContains(query.toLowerCase())) {
                         searchEvents.add(event);
                     }
                 }
 
                 if (searchEvents.isEmpty()) {
                     Toast.makeText(getContext(), "No events found", Toast.LENGTH_SHORT).show();
-                    return false;
+                    return true;
                 }
                 // clear markers and display only searched ones
                 mGoogleMap.clear();
@@ -154,7 +157,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                 LatLng curCoord = new LatLng(searchEvents.get(0).getGeoPoint().getLatitude(),
                         searchEvents.get(0).getGeoPoint().getLongitude());
                 mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curCoord, DEFAULT_ZOOM));
-                return false;
+                return true;
             }
 
             @Override
