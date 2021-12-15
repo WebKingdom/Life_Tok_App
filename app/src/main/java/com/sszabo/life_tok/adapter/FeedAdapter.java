@@ -119,7 +119,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
                     if (temp != null) {
                         if (!temp.exists()) {
-                            // TODO
+                            // TODO?
+                            Log.d(TAG, "onComplete: Temp file does not exist! Create new one?");
                         }
                         if (event.isPicture()) {
                             // display picture

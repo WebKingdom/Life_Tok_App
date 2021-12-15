@@ -36,13 +36,11 @@ import com.sszabo.life_tok.util.FirebaseUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
-    private SearchView searchView;
     private ViewPager2 feedViewPager;
 
     private ArrayList<Event> eventsList;
@@ -138,7 +136,7 @@ public class HomeFragment extends Fragment {
         inflater.inflate(R.menu.default_menu, menu);
 
         MenuItem menuSearchItem = menu.findItem(R.id.item_action_search);
-        searchView = (SearchView) menuSearchItem.getActionView();
+        SearchView searchView = (SearchView) menuSearchItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -192,6 +190,7 @@ public class HomeFragment extends Fragment {
     }
 
     private RequestManager initGlide() {
+        // TODO show profile picture in image view
         RequestOptions options = new RequestOptions()
                 .placeholder(R.drawable.ic_launcher_background)
                 .error(R.drawable.ic_launcher_background);

@@ -61,7 +61,6 @@ public class CreateFragment extends Fragment {
 
     private ImageView btnPhoto;
     private ImageView btnVideo;
-    private ImageView btnGallery;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
 
     private ActivityResultLauncher<String[]> activityResultLauncher;
@@ -76,7 +75,6 @@ public class CreateFragment extends Fragment {
 
         btnPhoto = binding.floatingBtnPhoto;
         btnVideo = binding.floatingBtnVideo;
-        btnGallery = binding.floatingBtnGallery;
         previewView = binding.previewViewCamera;
 
         setListener();
@@ -184,13 +182,6 @@ public class CreateFragment extends Fragment {
                     btnVideo.setBackgroundTintList(ColorStateList.valueOf(R.color.light_grey));
                     recordVideo();
                 }
-            }
-        });
-
-        btnGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO choose photo from gallery (optional)
             }
         });
     }

@@ -58,7 +58,6 @@ public class ProfileFragment extends Fragment {
     private ArrayList<Event> eventsList;
     private RecyclerView rvProfile;
 
-    // TODO create adapter for recyclerview and
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
