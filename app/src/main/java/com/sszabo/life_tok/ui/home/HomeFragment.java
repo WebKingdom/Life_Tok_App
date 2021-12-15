@@ -37,6 +37,9 @@ import com.sszabo.life_tok.util.FirebaseUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment class for the home scrollable feed of events.
+ */
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
@@ -49,8 +52,7 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();

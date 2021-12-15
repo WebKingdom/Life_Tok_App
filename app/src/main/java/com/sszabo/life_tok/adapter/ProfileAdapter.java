@@ -32,12 +32,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Profile Adapter class that extends Recycler View for displaying the user's own events in a scrollable list.
+ * This is used on the profile page.
+ */
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder> {
     private static final String TAG = ProfileAdapter.class.getSimpleName();
 
     private ArrayList<Event> eventsList;
     private Context context;
 
+    /**
+     * Constructor for the profile adapter.
+     *
+     * @param events list of events (that were created by the user)
+     */
     public ProfileAdapter(ArrayList<Event> events) {
         eventsList = events;
     }
@@ -49,7 +58,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
         return new ProfileViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_profile_row, parent, false));
     }
 
-    // populate data into the view item through the holder
+    /**
+     * Binds the elements in the holder to an event specified by the position (index).
+     * @param holder the ViewHolder to bind to
+     * @param position the index in the list of events
+     */
     @Override
     public void onBindViewHolder(@NonNull ProfileViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.txtEventName.setText(eventsList.get(position).getName());
@@ -147,6 +160,12 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
         downloadEventMedia(eventsList.get(position), holder);
     }
 
+    /**
+     * Downloads the correct event media and displays it.
+     *
+     * @param event  the event to download the media for
+     * @param holder the view holder to put the media in
+     */
     private void downloadEventMedia(Event event, ProfileViewHolder holder) {
         final long HUNDRED_MEGABYTE = 100 * 1024 * 1024;
         StorageReference ref = FirebaseUtil.getStorage().getReferenceFromUrl(event.getMediaUrl());
@@ -169,7 +188,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
 
                     if (temp != null) {
                         if (!temp.exists()) {
-                            // TODO?
+                            // TODO? temp file does not exist
                             Log.d(TAG, "onComplete: Temp file does not exist! Create new one?");
                         }
                         if (event.isPicture()) {
@@ -207,6 +226,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
     }
 
 
+    /**
+     * View Holder for the Profile Adapter so that the items in the view can be accessed.
+     */
     public class ProfileViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView eventImageView;

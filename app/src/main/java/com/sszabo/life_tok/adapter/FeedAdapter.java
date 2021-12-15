@@ -30,14 +30,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Feed Adapter class that extends Recycler View for handling and displaying the scrollable feed of events
+ * on the user's main page.
+ */
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
-
     private static final String TAG = FeedAdapter.class.getSimpleName();
 
     private ArrayList<Event> eventsList;
     private RequestManager requestManager;
     private Context context;
 
+    /**
+     * Constructor for the feed adapter.
+     *
+     * @param events         list of events (from the users that are being followed)
+     * @param requestManager request manager for Glide (for setting profile profile picture on feed)
+     */
     public FeedAdapter(ArrayList<Event> events, RequestManager requestManager) {
         this.eventsList = events;
         this.requestManager = requestManager;
@@ -50,6 +59,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         return new FeedViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_feed, parent, false));
     }
 
+    /**
+     * Binds the elements in the holder to an event specified by the position (index).
+     * @param holder the ViewHolder to bind to
+     * @param position the index in the list of events
+     */
     @Override
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
         holder.txtEventName.setText(eventsList.get(position).getName());
@@ -97,6 +111,12 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         });
     }
 
+    /**
+     * Downloads the correct event media and displays it.
+     *
+     * @param event  the event to download the media for
+     * @param holder the view holder to put the media in
+     */
     private void downloadAndStartMedia(Event event, FeedViewHolder holder) {
         final long HUNDRED_MEGABYTE = 100 * 1024 * 1024;
         StorageReference ref = FirebaseUtil.getStorage().getReferenceFromUrl(event.getMediaUrl());
@@ -119,7 +139,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
                     if (temp != null) {
                         if (!temp.exists()) {
-                            // TODO?
+                            // TODO? temp file does not exist
                             Log.d(TAG, "onComplete: Temp file does not exist! Create new one?");
                         }
                         if (event.isPicture()) {
@@ -156,6 +176,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     }
 
 
+    /**
+     * View Holder class for the Feed Adapter so that the items in the view can be accessed.
+     */
     public class FeedViewHolder extends RecyclerView.ViewHolder {
 
         private VideoView videoPlayer;

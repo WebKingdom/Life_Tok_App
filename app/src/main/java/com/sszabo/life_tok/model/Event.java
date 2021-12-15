@@ -5,6 +5,9 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.io.Serializable;
 
+/**
+ * A model class for an event. It contains all the information an event is composed of.
+ */
 public class Event implements Serializable {
 
     private String id;
@@ -14,6 +17,7 @@ public class Event implements Serializable {
     private String description;
     private int numLikes;
     private String mediaUrl;
+
     // TODO use picture/thumbnail for profile picture?
     private String thumbnailUrl;
     private boolean isPicture;
@@ -27,6 +31,23 @@ public class Event implements Serializable {
     private String locationName;
     private Timestamp timestamp;
 
+    /**
+     * Constructor for an event.
+     *
+     * @param id           of event
+     * @param userId       of the user who posted the event
+     * @param username     of the user who posted the event
+     * @param name         of the user who posted the event
+     * @param description  of the event
+     * @param likes        number of likes for the event
+     * @param mediaUrl     URL location of the media for the event
+     * @param thumbnailUrl URL location for the thumbnail of the event
+     * @param isPicture    boolean marking it event contains a picture or video
+     * @param eventType    type of event (1-public, 0-private)
+     * @param geoPoint     location of the event
+     * @param locationName name for the location of the event
+     * @param timestamp    time the event was posted
+     */
     public Event(String id, String userId, String username, String name, String description, int likes, String mediaUrl,
                  String thumbnailUrl, boolean isPicture, int eventType, GeoPoint geoPoint, String locationName,
                  Timestamp timestamp) {
@@ -46,7 +67,7 @@ public class Event implements Serializable {
     }
 
     /**
-     * Empty constructor
+     * Empty event constructor
      */
     public Event() {
     }
@@ -156,7 +177,7 @@ public class Event implements Serializable {
     }
 
     /**
-     * Searches an event for name, description, or location name.
+     * Searches an event for name, description, username, or location.
      *
      * @param query to search for
      * @return true if event contains query, false otherwise

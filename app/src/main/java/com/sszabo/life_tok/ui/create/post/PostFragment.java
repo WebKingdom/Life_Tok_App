@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -55,6 +57,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Fragment class for posting an event. Contains all information/interactions for posting an event.
+ */
 public class PostFragment extends Fragment {
     private static final String TAG = PostFragment.class.getSimpleName();
 
@@ -85,11 +90,19 @@ public class PostFragment extends Fragment {
     private Geocoder geocoder;
     private ActivityResultLauncher<String[]> activityResultLauncher;
 
+    /**
+     * Creates the view for the post fragment. Sets up bindings and listeners.
+     *
+     * @param inflater           the layout inflater
+     * @param container          the View Group container
+     * @param savedInstanceState saved state bundle
+     * @return root binding
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        postViewModel = new PostViewModel();
+        postViewModel = new ViewModelProvider(this).get(PostViewModel.class);
 
         binding = FragmentPostBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -141,6 +154,9 @@ public class PostFragment extends Fragment {
 
         setListeners();
 
+        // required for top back button functionality
+        setHasOptionsMenu(true);
+
         // set up back button press action
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -161,6 +177,16 @@ public class PostFragment extends Fragment {
     public void onStart() {
         super.onStart();
         getLocationOfEvent();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void getLocationOfEvent() {
@@ -210,7 +236,7 @@ public class PostFragment extends Fragment {
     }
 
     /**
-     * Sets listeners for buttons and other objects
+     * Sets listeners for the interactive UI elements.
      */
     private void setListeners() {
         btnPost.setOnClickListener(new View.OnClickListener() {
@@ -435,6 +461,11 @@ public class PostFragment extends Fragment {
         });
     }
 
+    /**
+     * Sets the instance variables with the contents of updated UI elements and ensures all are valid.
+     *
+     * @return true if valid, false otherwise
+     */
     private boolean setAndVerifyFields() {
         boolean valid = true;
 
@@ -460,6 +491,9 @@ public class PostFragment extends Fragment {
         return valid;
     }
 
+    /**
+     * Navigate to the Create Fragment
+     */
     private void navToCreateFragment() {
         NavHostFragment.findNavController(PostFragment.this).navigate(R.id.action_nav_post_to_nav_create);
     }

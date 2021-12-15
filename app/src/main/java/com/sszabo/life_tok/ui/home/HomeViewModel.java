@@ -5,15 +5,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class HomeViewModel extends ViewModel {
-
-    private MutableLiveData<String> mText;
+    // TODO? Implement the Home ViewModel
 
     public HomeViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("Username goes here");
-    }
-
-    public LiveData<String> getText() {
-        return mText;
     }
 }
