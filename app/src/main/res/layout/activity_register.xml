@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,11 +23,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                android:layout_marginBottom="60dp"
+                android:layout_marginBottom="40dp"
                 android:text="@string/register"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="40sp" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_view_profile_register"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:elevation="12dp"
+                app:cardCornerRadius="100dp">
+
+                <ImageView
+                    android:id="@+id/image_view_profile_register"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/title_profile"
+                    android:scaleType="centerCrop"
+                    android:scaleX="0.5"
+                    android:scaleY="0.5"
+                    android:src="@drawable/ic_outline_add_a_photo_24" />
+            </androidx.cardview.widget.CardView>
 
             <EditText
                 android:id="@+id/txt_firstName"
@@ -171,8 +193,7 @@
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_margin="16dp"
                 android:indeterminate="true"
                 android:indeterminateTint="@android:color/white"
                 android:visibility="invisible" />

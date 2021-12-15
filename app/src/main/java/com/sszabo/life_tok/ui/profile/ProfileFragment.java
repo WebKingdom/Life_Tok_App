@@ -69,7 +69,7 @@ public class ProfileFragment extends Fragment {
         eventsList = new ArrayList<>();
 
         rvProfile = binding.recyclerViewProfile;
-        profPic = binding.imageViewProfilePic;
+        profPic = binding.imageViewProfile;
         txtUsername = binding.txtUsernameProfile;
         txtNumFollowers = binding.txtNumFollowers;
         txtNumFollowing = binding.txtNumFollowing;
@@ -136,6 +136,8 @@ public class ProfileFragment extends Fragment {
                     if (temp != null) {
                         // display picture
                         profPic.setImageURI(Uri.fromFile(temp));
+                        profPic.setScaleX(1);
+                        profPic.setScaleY(1);
                     } else {
                         Toast.makeText(getContext(), "Temporary profile picture save failed", Toast.LENGTH_SHORT).show();
                     }

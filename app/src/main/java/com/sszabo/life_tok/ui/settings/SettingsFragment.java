@@ -1,7 +1,6 @@
 package com.sszabo.life_tok.ui.settings;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -95,7 +94,7 @@ public class SettingsFragment extends Fragment {
         picUri = null;
         pictureUrl = "";
 
-        profPic = binding.imageViewProfile;
+        profPic = binding.imageViewProfileSettings;
         txtFirstName = binding.txtFirstNameSettings;
         txtLastName = binding.txtLastNameSettings;
         txtEmail = binding.txtEmailSettings;
@@ -117,6 +116,8 @@ public class SettingsFragment extends Fragment {
                     settingsViewModel.setProfPicUpdated(true);
                     picUri = result.getData().getData();
                     profPic.setImageURI(picUri);
+                    profPic.setScaleX(1);
+                    profPic.setScaleY(1);
                 } else {
                     Log.d(TAG, "onActivityResult: Could not get profile picture Uri");
                 }
@@ -396,6 +397,7 @@ public class SettingsFragment extends Fragment {
 
     /**
      * Deletes a singe piece of media based from Firebase Storage at the provided URL.
+     *
      * @param url the location to delete
      */
     private void deleteSingleMedia(String url) {
@@ -470,6 +472,8 @@ public class SettingsFragment extends Fragment {
                         // display picture
                         if (!settingsViewModel.isProfPicUpdated()) {
                             profPic.setImageURI(Uri.fromFile(temp));
+                            profPic.setScaleX(1);
+                            profPic.setScaleY(1);
                         }
                     } else {
                         Toast.makeText(getContext(), "Temporary profile picture save failed", Toast.LENGTH_SHORT).show();

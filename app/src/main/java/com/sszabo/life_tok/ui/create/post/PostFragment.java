@@ -260,6 +260,11 @@ public class PostFragment extends Fragment {
                         return;
                     }
 
+                    if (addresses == null || addresses.isEmpty()) {
+                        Toast.makeText(getContext(), "Could not find location. Try again.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     Address addr = addresses.get(0);
                     eventGeoPoint = new GeoPoint(addr.getLatitude(), addr.getLongitude());
                     txtEventLocation.setText(addr.getAddressLine(0));

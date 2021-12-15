@@ -1,19 +1,15 @@
 package com.sszabo.life_tok.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -22,17 +18,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.StorageReference;
 import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.model.Event;
-import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,7 +38,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
     private ArrayList<Event> eventsList;
     private Context context;
 
-    public ProfileAdapter(ArrayList<Event> events){
+    public ProfileAdapter(ArrayList<Event> events) {
         eventsList = events;
     }
 
@@ -59,7 +51,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
 
     // populate data into the view item through the holder
     @Override
-    public void onBindViewHolder(@NonNull ProfileViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ProfileViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.txtEventName.setText(eventsList.get(position).getName());
         holder.txtEventDescription.setText(eventsList.get(position).getDescription());
         holder.txtEventLocation.setText(eventsList.get(position).getLocationName());
@@ -68,7 +60,76 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
         holder.btnEventDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO delete event
+                Event event = eventsList.get(position);
+
+                // delete media (Storage)
+                FirebaseUtil.getStorage()
+                        .getReferenceFromUrl(event.getMediaUrl())
+                        .delete()
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(v.getContext(), "Failed to delete event media", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "onFailure: failed to delete event " + event.getId() + " media");
+                            }
+                        });
+
+                // delete event (Firestore)
+                if (event.getEventType() == 0) {
+                    // private
+                    FirebaseUtil.getFirestore()
+                            .collection("users")
+                            .document(event.getUserId())
+                            .collection("events")
+                            .document(event.getId())
+                            .delete()
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        eventsList.remove(event);
+                                        Toast.makeText(v.getContext(), "Delete event", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(v.getContext(), "Failed to delete event", Toast.LENGTH_SHORT).show();
+                                        Log.d(TAG, "onFailure: failed to delete private event: " + event.getId());
+                                    }
+                                }
+                            });
+                } else {
+                    // public, must modify publicEventIds field
+                    List<String> idList = MainViewModel.getCurrentUser().getPublicEventIds();
+                    idList.remove(event.getId());
+
+                    FirebaseUtil.getFirestore()
+                            .collection("users")
+                            .document(event.getUserId())
+                            .update("publicEventIds", idList)
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(v.getContext(), "Failed to delete from public event list", Toast.LENGTH_SHORT).show();
+                                    Log.d(TAG, "onFailure: failed to delete public event ID: " + event.getId() +
+                                            " from public events list");
+                                }
+                            });
+
+                    FirebaseUtil.getFirestore()
+                            .collection("publicEvents")
+                            .document(event.getId())
+                            .delete()
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        eventsList.remove(event);
+                                        Toast.makeText(v.getContext(), "Deleted event", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(v.getContext(), "Failed to delete event", Toast.LENGTH_SHORT).show();
+                                        Log.d(TAG, "onFailure: failed to delete public event: " + event.getId());
+                                    }
+                                }
+                            });
+                }
             }
         });
 
@@ -108,7 +169,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
 
                     if (temp != null) {
                         if (!temp.exists()) {
-                            // TODO
+                            // TODO?
                             Log.d(TAG, "onComplete: Temp file does not exist! Create new one?");
                         }
                         if (event.isPicture()) {

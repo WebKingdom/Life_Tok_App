@@ -43,6 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:elevation="12dp"
+                android:foregroundGravity="center"
                 app:cardCornerRadius="100dp"
                 app:layout_constraintBottom_toTopOf="@+id/txt_firstName_settings"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -50,11 +51,14 @@
                 app:layout_constraintTop_toBottomOf="@+id/txt_profile_settings">
 
                 <ImageView
-                    android:id="@+id/image_view_profile"
+                    android:id="@+id/image_view_profile_settings"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
+                    android:layout_gravity="center"
                     android:contentDescription="@string/title_profile"
                     android:scaleType="centerCrop"
+                    android:scaleX="0.5"
+                    android:scaleY="0.5"
                     android:src="@drawable/ic_outline_add_a_photo_24" />
             </androidx.cardview.widget.CardView>
 

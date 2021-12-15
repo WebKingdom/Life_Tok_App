@@ -29,11 +29,14 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/image_view_profile_pic"
+                android:id="@+id/image_view_profile"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
+                android:layout_gravity="center"
                 android:contentDescription="@string/title_profile"
                 android:scaleType="centerCrop"
+                android:scaleX="0.5"
+                android:scaleY="0.5"
                 android:src="@drawable/ic_outline_add_a_photo_24" />
         </androidx.cardview.widget.CardView>
 
