@@ -109,14 +109,16 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         Log.d(TAG, "onDestroy: Main Activity Destroyed.");
         LifeTokApplication app = (LifeTokApplication) getApplication();
-        app.executorService.shutdown();
-        try {
-            if (app.executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+        if (!app.executorService.isShutdown()) {
+            app.executorService.shutdown();
+            try {
+                if (app.executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+                    app.executorService.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
                 app.executorService.shutdownNow();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            app.executorService.shutdownNow();
         }
     }
 

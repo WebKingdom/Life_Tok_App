@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment {
                     for (Task<?> t : task.getResult()) {
                         eventsList.addAll(((QuerySnapshot) t.getResult()).toObjects(Event.class));
                     }
-                    feedAdapter = new FeedAdapter(eventsList, initGlide());
+                    feedAdapter = new FeedAdapter(feedViewPager, eventsList, initGlide());
                     feedViewPager.setAdapter(feedAdapter);
                 } else {
                     Toast.makeText(getContext(), "Could not get all events for user", Toast.LENGTH_SHORT).show();

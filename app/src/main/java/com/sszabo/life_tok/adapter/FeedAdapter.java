@@ -3,6 +3,7 @@ package com.sszabo.life_tok.adapter;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +16,14 @@ import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.RequestManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.storage.StorageReference;
+import com.sszabo.life_tok.LifeTokApplication;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.util.FirebaseUtil;
@@ -40,6 +43,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     private ArrayList<Event> eventsList;
     private RequestManager requestManager;
     private Context context;
+    private FeedViewHolder feedViewHolder;
 
     /**
      * Constructor for the feed adapter.
@@ -47,9 +51,35 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
      * @param events         list of events (from the users that are being followed)
      * @param requestManager request manager for Glide (for setting profile profile picture on feed)
      */
-    public FeedAdapter(ArrayList<Event> events, RequestManager requestManager) {
+    public FeedAdapter(ViewPager2 viewPager, ArrayList<Event> events, RequestManager requestManager) {
         this.eventsList = events;
         this.requestManager = requestManager;
+
+        // TODO automatically start video when scrolling
+//        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+//            @Override
+//            public void onPageSelected(int position) {
+//                super.onPageSelected(position);
+//
+//                // set timeout for number of times to try and start video
+//                CountDownTimer t = new CountDownTimer(1000, 200) {
+//                    @Override
+//                    public void onTick(long millisUntilFinished) {
+//                        if (!eventsList.get(position).isPicture() && !feedViewHolder.videoPlayer.isPlaying()) {
+//                            feedViewHolder.videoPlayer.start();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFinish() {
+//                        if (!eventsList.get(position).isPicture() && !feedViewHolder.videoPlayer.isPlaying()) {
+////                            Toast.makeText(context, "Could not start video. Start manually", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                };
+//                t.start();
+//            }
+//        });
     }
 
     /**
@@ -63,7 +93,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     @Override
     public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        return new FeedViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_feed, parent, false));
+        feedViewHolder = new FeedViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_feed, parent, false));
+        return feedViewHolder;
     }
 
     /**

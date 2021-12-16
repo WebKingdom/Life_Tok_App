@@ -161,9 +161,16 @@ public class PostFragment extends Fragment {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                if (filePath.isEmpty()) {
+                    navToCreateFragment();
+                    return;
+                }
+
                 File file = new File(filePath);
                 if (!file.delete()) {
                     Toast.makeText(getContext(), "Failed to delete file. Delete manually", Toast.LENGTH_SHORT).show();
+                } else {
+                    filePath = "";
                 }
                 navToCreateFragment();
             }
@@ -261,12 +268,18 @@ public class PostFragment extends Fragment {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file = new File(filePath);
-                if (file.delete()) {
+                if (filePath.isEmpty()) {
                     navToCreateFragment();
-                } else {
-                    Toast.makeText(getContext(), "Failed to delete file, delete manually", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                File file = new File(filePath);
+                if (!file.delete()) {
+                    Toast.makeText(getContext(), "Failed to delete file. Delete manually", Toast.LENGTH_SHORT).show();
+                } else {
+                    filePath = "";
+                }
+                navToCreateFragment();
             }
         });
 
@@ -517,6 +530,12 @@ public class PostFragment extends Fragment {
     @Override
     public void onDestroy() {
         // user navigates away from post fragment, should delete temp file of post
+        if (filePath.isEmpty()) {
+            super.onDestroy();
+            binding = null;
+            return;
+        }
+
         File file = new File(filePath);
         if (!file.delete()) {
             Toast.makeText(getContext(), "Failed to delete file, delete manually", Toast.LENGTH_SHORT).show();

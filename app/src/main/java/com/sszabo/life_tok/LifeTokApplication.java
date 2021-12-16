@@ -17,13 +17,16 @@ public class LifeTokApplication extends Application {
     /**
      * Executor Service for running tasks asynchronously or off the main thread
      */
-    public ExecutorService executorService;
+    public ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     /**
      * The Handler for the main thread
      */
-    public Handler mainThreadHandler;
+    public Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
 
+    /**
+     * Initialize the executor and handler in case they have been shut down of modified.
+     */
     public void initApp() {
         if (executorService == null || executorService.isShutdown()) {
             executorService = Executors.newSingleThreadExecutor();
