@@ -6,13 +6,12 @@ import androidx.lifecycle.ViewModel;
 
 public class CreateViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
-
     private boolean isRecording;
 
+    /**
+     * Constructor for the create view model
+     */
     public CreateViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is dashboard fragment");
         isRecording = false;
     }
 
@@ -22,9 +21,5 @@ public class CreateViewModel extends ViewModel {
 
     public void setRecording(boolean recording) {
         isRecording = recording;
-    }
-
-    public LiveData<String> getText() {
-        return mText;
     }
 }

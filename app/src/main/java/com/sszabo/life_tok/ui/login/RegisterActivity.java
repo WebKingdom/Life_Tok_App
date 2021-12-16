@@ -36,8 +36,10 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Activity class for the registering/signing up. Contains all information/interactions for registering in.
+ */
 public class RegisterActivity extends AppCompatActivity {
-
     private static final String TAG = RegisterActivity.class.getSimpleName();
 
     private String firstName;
@@ -65,6 +67,11 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean isProfPicSet;
 
+    /**
+     * Creates the activity, called when the activity is starting. Sets up bindings and listeners.
+     *
+     * @param savedInstanceState saved state bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,13 +106,13 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        setUIListeners();
+        setListeners();
     }
 
     /**
-     * Sets the listeners for the UI
+     * Sets listeners for the interactive UI elements.
      */
-    private void setUIListeners() {
+    private void setListeners() {
         btnCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -234,7 +241,7 @@ public class RegisterActivity extends AppCompatActivity {
     /**
      * Sets and verifies all user registration fields
      *
-     * @return
+     * @return true if all fields are valid, false otherwise
      */
     private boolean setAndVerifyFields() {
         boolean valid = true;

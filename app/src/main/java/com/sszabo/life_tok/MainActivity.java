@@ -20,13 +20,23 @@ import com.sszabo.life_tok.databinding.ActivityMainBinding;
 import com.sszabo.life_tok.ui.login.LoginActivity;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.concurrent.TimeUnit;
 
+/**
+ * Activity class for the main activity which is the entire Life Tok app (except for login & register).
+ * Contains the navigation and handling of authentication.
+ */
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding binding;
     private MainViewModel mViewModel;
 
+    /**
+     * Creates the activity, called when the activity is starting. Sets up authentication, navigation, and binding.
+     *
+     * @param savedInstanceState saved state bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Starts the fragment, called when fragment is visible to the user.
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -83,19 +96,36 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onStart: Failed to add snapshotListener to 'Users'");
             launchLoginActivity();
         }
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        LifeTokApplication app = (LifeTokApplication) getApplication();
-        app.executorService.shutdown();
+        // Initialize the executors and handlers because login/logout destroys main activity
+        ((LifeTokApplication) getApplication()).initApp();
     }
 
     /**
-     * Opens login activity clearing all activities before it
+     * Destroys the fragment, called when fragment is no longer in use.
      */
-    public void launchLoginActivity() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: Main Activity Destroyed.");
+        LifeTokApplication app = (LifeTokApplication) getApplication();
+        if (!app.executorService.isShutdown()) {
+            app.executorService.shutdown();
+            try {
+                if (app.executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+                    app.executorService.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                app.executorService.shutdownNow();
+            }
+        }
+    }
+
+    /**
+     * Launches the login activity, clearing all activities before it
+     */
+    private void launchLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

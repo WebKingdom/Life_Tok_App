@@ -22,8 +22,10 @@ import com.sszabo.life_tok.MainActivity;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
+/**
+ * Activity class for the login. Contains all the information/interactions for logging in.
+ */
 public class LoginActivity extends AppCompatActivity {
-
     private static final String TAG = LoginActivity.class.getSimpleName();
 
     private String email;
@@ -36,6 +38,11 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnSignUp;
     private ProgressBar progressBarLogin;
 
+    /**
+     * Creates the activity, called when the activity is starting. Sets up bindings and listeners.
+     *
+     * @param savedInstanceState saved state bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,13 +57,13 @@ public class LoginActivity extends AppCompatActivity {
         progressBarLogin = findViewById(R.id.progress_bar_login);
         progressBarLogin.setVisibility(View.INVISIBLE);
 
-        setUIListeners();
+        setListeners();
     }
 
     /**
-     * Sets the listeners for the UI
+     * Sets listeners for the interactive UI elements.
      */
-    private void setUIListeners() {
+    private void setListeners() {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Launches the main activity with a clear activity stack and email passed as extra
+     * Launches the main activity with a clear activity stack
      */
     private void launchMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
@@ -134,9 +141,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Verifies and sets all user registration fields
+     * Verifies and sets all user login fields
      *
-     * @return true if all fields valid, false otherwise
+     * @return true if all fields are valid, false otherwise
      */
     private boolean setAndVerifyFields() {
         boolean valid = true;

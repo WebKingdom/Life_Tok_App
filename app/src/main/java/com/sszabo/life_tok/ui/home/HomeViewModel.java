@@ -4,16 +4,15 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+/**
+ * View Model class for the Home Fragment.
+ */
 public class HomeViewModel extends ViewModel {
+    // TODO? Implement the Home ViewModel
 
-    private MutableLiveData<String> mText;
-
+    /**
+     * Constructor
+     */
     public HomeViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("Username goes here");
-    }
-
-    public LiveData<String> getText() {
-        return mText;
     }
 }

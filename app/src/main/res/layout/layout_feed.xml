@@ -62,25 +62,25 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txt_post_description"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:ellipsize="end"
             android:lines="5"
             android:maxLines="5"
             android:textColor="@color/white"
             android:textSize="14sp"
-            app:layout_constraintBottom_toTopOf="@+id/txt_post_location"
+            app:layout_constraintBottom_toTopOf="@+id/txt_post_time"
             app:layout_constraintEnd_toStartOf="@+id/post_options_container"
-            app:layout_constraintHeight_default="wrap"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="Post/event description here... More info to come when available blah blah..." />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txt_post_location"
+            android:id="@+id/txt_post_time"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
@@ -89,11 +89,25 @@
             android:singleLine="true"
             android:textColor="@color/white"
             android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/txt_post_location"
+            app:layout_constraintEnd_toStartOf="@+id/post_options_container"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Post time here" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_post_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/post_options_container"
-            app:layout_constraintHeight_default="wrap"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintWidth_percent=".8"
             tools:text="Post location here" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -102,7 +116,6 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_default="wrap"
             app:layout_constraintTop_toTopOf="@id/txt_post_name">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -130,19 +143,22 @@
                     android:id="@+id/image_view_follow_option"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:layout_constraintBottom_toBottomOf="@+id/image_view_profile_pic"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/image_view_profile_pic"
                     app:srcCompat="@drawable/ic_follow_avatar_bottom_icon" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/image_view_like_option"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:clickable="true"
+                android:focusable="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profile_container"
@@ -153,17 +169,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:gravity="center"
+                android:gravity="center_horizontal"
                 android:lines="1"
                 android:maxLines="1"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/image_view_like_option"
                 tools:text="10.1k" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

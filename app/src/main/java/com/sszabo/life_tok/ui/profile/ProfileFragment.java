@@ -43,11 +43,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment class for viewing the user's profile. Contains all information/interactions for viewing the user's profile.
+ */
 public class ProfileFragment extends Fragment {
-
     private static final String TAG = ProfileFragment.class.getSimpleName();
 
-    private ProfileViewModel profileViewModel;
     private FragmentProfileBinding binding;
 
     private ImageView profPic;
@@ -58,10 +59,17 @@ public class ProfileFragment extends Fragment {
     private ArrayList<Event> eventsList;
     private RecyclerView rvProfile;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
-
+    /**
+     * Creates the view for the profile fragment. Sets up bindings and listeners.
+     *
+     * @param inflater           the layout inflater
+     * @param container          the View Group container
+     * @param savedInstanceState saved state bundle
+     * @return root binding
+     */
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -78,11 +86,23 @@ public class ProfileFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Creates the top options menu.
+     *
+     * @param menu     the Menu object
+     * @param inflater the Menu Inflater
+     */
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.profile_menu, menu);
     }
 
+    /**
+     * Selector for menu options.
+     *
+     * @param item that was clicked
+     * @return false for normal menu processing, true if handled privately
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -98,6 +118,9 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    /**
+     * Starts the fragment, called when fragment is visible to the user.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -147,7 +170,9 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    // get user's events
+    /**
+     * Gets the user's own events
+     */
     private void getMyEvents() {
         eventsList.clear();
 
@@ -179,6 +204,9 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    /**
+     * Destroys the fragment, called when fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

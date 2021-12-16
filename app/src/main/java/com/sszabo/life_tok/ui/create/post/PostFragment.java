@@ -8,8 +8,10 @@ import android.location.Location;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.security.KeyChainException;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -40,6 +43,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.sszabo.life_tok.LifeTokApplication;
 import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentPostBinding;
@@ -54,12 +58,16 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
+/**
+ * Fragment class for posting an event. Contains all information/interactions for posting an event.
+ */
 public class PostFragment extends Fragment {
     private static final String TAG = PostFragment.class.getSimpleName();
 
     private FragmentPostBinding binding;
-    private PostViewModel postViewModel;
 
     private Button btnDelete;
     private Button btnPost;
@@ -85,12 +93,17 @@ public class PostFragment extends Fragment {
     private Geocoder geocoder;
     private ActivityResultLauncher<String[]> activityResultLauncher;
 
-    @Nullable
+    /**
+     * Creates the view for the post fragment. Sets up bindings and listeners.
+     *
+     * @param inflater           the layout inflater
+     * @param container          the View Group container
+     * @param savedInstanceState saved state bundle
+     * @return root binding
+     */
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        postViewModel = new PostViewModel();
-
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentPostBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -141,13 +154,23 @@ public class PostFragment extends Fragment {
 
         setListeners();
 
+        // required for top back button functionality
+        setHasOptionsMenu(true);
+
         // set up back button press action
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                if (filePath.isEmpty()) {
+                    navToCreateFragment();
+                    return;
+                }
+
                 File file = new File(filePath);
                 if (!file.delete()) {
                     Toast.makeText(getContext(), "Failed to delete file. Delete manually", Toast.LENGTH_SHORT).show();
+                } else {
+                    filePath = "";
                 }
                 navToCreateFragment();
             }
@@ -157,12 +180,34 @@ public class PostFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Starts the fragment, called when fragment is visible to the user.
+     */
     @Override
     public void onStart() {
         super.onStart();
         getLocationOfEvent();
     }
 
+    /**
+     * Selector for menu options.
+     *
+     * @param item that was clicked
+     * @return false for normal menu processing, true if handled privately
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Gets the location of an event by taking you current location.
+     */
     private void getLocationOfEvent() {
         String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION};
@@ -210,7 +255,7 @@ public class PostFragment extends Fragment {
     }
 
     /**
-     * Sets listeners for buttons and other objects
+     * Sets listeners for the interactive UI elements.
      */
     private void setListeners() {
         btnPost.setOnClickListener(new View.OnClickListener() {
@@ -223,12 +268,18 @@ public class PostFragment extends Fragment {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file = new File(filePath);
-                if (file.delete()) {
+                if (filePath.isEmpty()) {
                     navToCreateFragment();
-                } else {
-                    Toast.makeText(getContext(), "Failed to delete file, delete manually", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                File file = new File(filePath);
+                if (!file.delete()) {
+                    Toast.makeText(getContext(), "Failed to delete file. Delete manually", Toast.LENGTH_SHORT).show();
+                } else {
+                    filePath = "";
+                }
+                navToCreateFragment();
             }
         });
 
@@ -317,8 +368,9 @@ public class PostFragment extends Fragment {
         Uri file = Uri.fromFile(new File(filePath));
         String uploadPath = "userMedia/" + uid + "/" + file.getLastPathSegment();
         StorageReference storageReference = FirebaseUtil.getStorage().getReference(uploadPath);
+        Executor exec = ((LifeTokApplication) getActivity().getApplication()).executorService;
 
-        storageReference.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        storageReference.putFile(file).addOnCompleteListener(exec, new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -435,6 +487,11 @@ public class PostFragment extends Fragment {
         });
     }
 
+    /**
+     * Sets the instance variables with the contents of updated UI elements and ensures all are valid.
+     *
+     * @return true if all fields are valid, false otherwise
+     */
     private boolean setAndVerifyFields() {
         boolean valid = true;
 
@@ -460,12 +517,30 @@ public class PostFragment extends Fragment {
         return valid;
     }
 
+    /**
+     * Navigate to the Create Fragment
+     */
     private void navToCreateFragment() {
         NavHostFragment.findNavController(PostFragment.this).navigate(R.id.action_nav_post_to_nav_create);
     }
 
+    /**
+     * Destroys the fragment, called when fragment is no longer in use.
+     */
     @Override
     public void onDestroy() {
+        // user navigates away from post fragment, should delete temp file of post
+        if (filePath.isEmpty()) {
+            super.onDestroy();
+            binding = null;
+            return;
+        }
+
+        File file = new File(filePath);
+        if (!file.delete()) {
+            Toast.makeText(getContext(), "Failed to delete file, delete manually", Toast.LENGTH_SHORT).show();
+        }
+
         super.onDestroy();
         binding = null;
     }

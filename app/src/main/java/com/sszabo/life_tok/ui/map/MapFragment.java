@@ -40,6 +40,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.sszabo.life_tok.LifeTokApplication;
 import com.sszabo.life_tok.MainViewModel;
 import com.sszabo.life_tok.R;
 import com.sszabo.life_tok.databinding.FragmentMapBinding;
@@ -51,15 +52,18 @@ import com.sszabo.life_tok.util.Resources;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
+/**
+ * Fragment class for the map that displays all public and following user events.
+ * Can search for events in using this.
+ */
 public class MapFragment extends Fragment implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
-
     private static final String TAG = MapFragment.class.getSimpleName();
 
     private static final float DEFAULT_ZOOM = 12;
     private static final float CLOSE_ZOOM = 16;
 
-    private MapViewModel mapViewModel;
     private FragmentMapBinding binding;
 
     private FloatingActionButton btnRefreshMap;
@@ -72,11 +76,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
 
     private ArrayList<Event> eventsList;
 
-    @Nullable
+    /**
+     * Creates the view for the map fragment. Sets up bindings and listeners.
+     *
+     * @param inflater           the layout inflater
+     * @param container          the View Group container
+     * @param savedInstanceState saved state bundle
+     * @return root binding
+     */
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
-
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         setHasOptionsMenu(true);
@@ -112,10 +122,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
 
         setListeners();
 
-        Log.d(TAG, "onCreateView: Created view");
+        Log.d(TAG, "onCreateView: Created map view");
         return root;
     }
 
+    /**
+     * Sets listeners for the interactive UI elements.
+     */
     private void setListeners() {
         btnRefreshMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,6 +138,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         });
     }
 
+    /**
+     * Creates the top options menu.
+     *
+     * @param menu     the Menu object
+     * @param inflater the Menu Inflater
+     */
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.default_menu, menu);
@@ -167,12 +186,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         });
     }
 
+    /**
+     * Saves the fragments current dynamic state.
+     *
+     * @param outState the bundle containing the state data
+     */
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         // TODO? save state
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Starts the fragment, called when fragment is visible to the user.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -180,6 +207,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         mMapView.onStart();
     }
 
+    /**
+     * Resumes the fragment, called when it is visible to user and is running.
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -194,18 +224,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         mMapView.getMapAsync(this);
     }
 
+    /**
+     * Pauses the fragment, called when it is no longer resumed.
+     */
     @Override
     public void onPause() {
         super.onPause();
         mMapView.onPause();
     }
 
+    /**
+     * Stops the fragment, called when it is no longer started.
+     */
     @Override
     public void onStop() {
         super.onStop();
         mMapView.onStop();
     }
 
+    /**
+     * Destroys the fragment, called when fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -213,12 +252,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         binding = null;
     }
 
+    /**
+     * Called when the overall system is low on memory and needs to be trimmed.
+     */
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
 
+    /**
+     * Called when the Google Map is ready and handles the setup of markers for events and current user location.
+     *
+     * @param googleMap the GoogleMap object
+     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mGoogleMap = googleMap;
@@ -273,6 +320,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         });
     }
 
+    /**
+     * Navigates to the event view fragment
+     *
+     * @param index of the event currently selected in the events list
+     */
     private void navToEventViewFragment(int index) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(Resources.KEY_EVENT, eventsList.get(index));
@@ -289,12 +341,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
         mGoogleMap.clear();
         eventsList.clear();
         User curUser = MainViewModel.getCurrentUser();
+        Executor exec = ((LifeTokApplication) getActivity().getApplication()).executorService;
 
         // get all public events
         FirebaseUtil.getFirestore()
                 .collection("publicEvents")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addOnCompleteListener(exec, new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
@@ -323,7 +376,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Activit
                                 public void onComplete(@NonNull Task<List<Task<?>>> task) {
                                     if (task.isSuccessful()) {
                                         for (Task<?> t : task.getResult()) {
-                                            eventsList.addAll( ((QuerySnapshot) t.getResult()).toObjects(Event.class) );
+                                            eventsList.addAll(((QuerySnapshot) t.getResult()).toObjects(Event.class));
                                         }
                                         displayEvents(eventsList);
                                     } else {

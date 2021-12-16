@@ -1,8 +1,10 @@
 package com.sszabo.life_tok.model;
 
 import java.util.List;
-import java.util.Objects;
 
+/**
+ * A model class for a user. It contains all the information a user is composed of.
+ */
 public class User {
 
     private String id;
@@ -32,17 +34,19 @@ public class User {
     private List<String> followers;
 
     /**
-     * Fully populated user constructor
-     * @param id
-     * @param firstName
-     * @param lastName
-     * @param username
-     * @param email
-     * @param address
-     * @param phoneNo
-     * @param publicEventIds
-     * @param following
-     * @param followers
+     * Constructor for a user.
+     *
+     * @param id             of user
+     * @param firstName      of user
+     * @param lastName       of user
+     * @param username       of user
+     * @param email          of user
+     * @param address        of user
+     * @param phoneNo        of user
+     * @param pictureUrl     URL location for the profile picture of the user
+     * @param publicEventIds list of public event IDs (strings)
+     * @param following      list of following event IDs
+     * @param followers      list of follower event IDs
      */
     public User(String id, String firstName, String lastName, String username, String email, String address,
                 String phoneNo, String pictureUrl, List<String> publicEventIds, List<String> following,
@@ -61,32 +65,9 @@ public class User {
     }
 
     /**
-     * No Username and Email constructor for Firestore DB
-     * @param id
-     * @param firstName
-     * @param lastName
-     * @param address
-     * @param phoneNo
-     * @param following
-     * @param followers
-     */
-    public User(String id, String firstName, String lastName, String address, String phoneNo,
-                List<String> publicEventIds, List<String> following, List<String> followers) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.address = address;
-        this.phoneNo = phoneNo;
-        this.publicEventIds = publicEventIds;
-        this.following = following;
-        this.followers = followers;
-    }
-
-    /**
-     * Empty constructor
+     * Empty user constructor
      */
     public User() {
-
     }
 
     public String getId() {
@@ -178,7 +159,7 @@ public class User {
     }
 
     public boolean userEquals(User user) {
-        return  this.firstName.equals(user.getFirstName()) &&
+        return this.firstName.equals(user.getFirstName()) &&
                 this.lastName.equals(user.getLastName()) &&
                 this.username.equals(user.getUsername()) &&
                 this.email.equals(user.getEmail()) &&

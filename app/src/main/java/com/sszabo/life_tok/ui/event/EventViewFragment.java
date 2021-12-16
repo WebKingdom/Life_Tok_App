@@ -1,5 +1,6 @@
 package com.sszabo.life_tok.ui.event;
 
+import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,7 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.android.exoplayer2.text.span.HorizontalTextInVerticalContextSpan;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.StorageReference;
@@ -30,18 +30,16 @@ import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.util.FirebaseUtil;
 import com.sszabo.life_tok.util.Resources;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
 
+/**
+ * Fragment class for viewing an event. Contains all information/interactions for viewing an event.
+ */
 public class EventViewFragment extends Fragment {
     private static final String TAG = EventViewFragment.class.getSimpleName();
 
-    private EventViewModel eventViewModel;
     private FragmentEventViewBinding binding;
 
     private TextView txtEventName;
@@ -55,11 +53,17 @@ public class EventViewFragment extends Fragment {
 
     private Event event;
 
-    @Nullable
+    /**
+     * Creates the view for the event view fragment. Sets up bindings, listeners, and options menu.
+     *
+     * @param inflater           the layout inflater
+     * @param container          the View Group container
+     * @param savedInstanceState saved state bundle
+     * @return root binding
+     */
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        eventViewModel = new ViewModelProvider(this).get(EventViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentEventViewBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -96,6 +100,9 @@ public class EventViewFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Starts the fragment. Downloads the event media and displays all event information.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -146,6 +153,9 @@ public class EventViewFragment extends Fragment {
         txtEventTime.setText(event.getTimestamp().toDate().toString());
     }
 
+    /**
+     * Resumes the fragment, called when it is visible to user and is running.
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -155,6 +165,9 @@ public class EventViewFragment extends Fragment {
         }
     }
 
+    /**
+     * Sets listeners for interactive UI elements.
+     */
     private void setListeners() {
         btnLocationMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,6 +204,12 @@ public class EventViewFragment extends Fragment {
         });
     }
 
+    /**
+     * Selector for menu options.
+     *
+     * @param item that was clicked
+     * @return false for normal menu processing, true if handled privately
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -201,6 +220,9 @@ public class EventViewFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Navigates to the Map Fragment
+     */
     private void navToMapFragment() {
         Bundle bundle = new Bundle();
         bundle.putSerializable(Resources.KEY_EVENT, event);
@@ -209,6 +231,9 @@ public class EventViewFragment extends Fragment {
                 .navigate(R.id.action_nav_event_view_to_nav_map, bundle);
     }
 
+    /**
+     * Destroys the fragment, called when fragment is no longer in use.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();

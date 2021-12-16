@@ -7,18 +7,14 @@ import androidx.lifecycle.ViewModel;
 import java.io.File;
 import java.util.Hashtable;
 
+/**
+ * View Model class for the Profile Fragment.
+ */
 public class ProfileViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
-
-    private Hashtable<Integer, File> hashtable;
-
+    /**
+     * Constructor
+     */
     public ProfileViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is profile fragment");
-    }
-
-    public LiveData<String> getText() {
-        return mText;
     }
 }

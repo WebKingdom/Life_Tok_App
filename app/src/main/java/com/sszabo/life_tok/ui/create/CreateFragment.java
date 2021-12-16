@@ -30,7 +30,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -42,13 +41,17 @@ import com.sszabo.life_tok.util.Resources;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Fragment class for creating an event showing the camera.
+ * Can record video or take picture and will be navigated to Post Fragment after recording/picture is done.
+ */
 public class CreateFragment extends Fragment {
-
     private static final String TAG = CreateFragment.class.getSimpleName();
 
     private CreateViewModel createViewModel;
@@ -65,10 +68,18 @@ public class CreateFragment extends Fragment {
 
     private ActivityResultLauncher<String[]> activityResultLauncher;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        createViewModel =
-                new ViewModelProvider(this).get(CreateViewModel.class);
+    /**
+     * Creates the view for the create fragment. Sets up bindings and listeners.
+     *
+     * @param inflater           the layout inflater
+     * @param container          the View Group container
+     * @param savedInstanceState saved state bundle
+     * @return root binding
+     */
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        createViewModel = new ViewModelProvider(this).get(CreateViewModel.class);
 
         binding = FragmentCreateBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -76,8 +87,6 @@ public class CreateFragment extends Fragment {
         btnPhoto = binding.floatingBtnPhoto;
         btnVideo = binding.floatingBtnVideo;
         previewView = binding.previewViewCamera;
-
-        setListener();
 
         // set up permission requests
         activityResultLauncher = registerForActivityResult(
@@ -101,6 +110,8 @@ public class CreateFragment extends Fragment {
                     }
                 });
 
+        setListeners();
+
         // Add listener for camera and bind to lifecycle
         cameraProviderFuture = ProcessCameraProvider.getInstance(getContext());
         cameraProviderFuture.addListener(() -> {
@@ -113,17 +124,14 @@ public class CreateFragment extends Fragment {
             }
         }, ContextCompat.getMainExecutor(getContext()));
 
-
-//        final TextView textView = binding.cardViewGallery;
-//        createViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
         return root;
     }
 
+    /**
+     * Binds the Camera preview to the fragment. Also sets up the camera on the screen.
+     *
+     * @param cameraProvider the ProcessCameraProvider instance
+     */
     @SuppressLint("RestrictedApi")
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
         cameraProvider.unbindAll();
@@ -131,7 +139,7 @@ public class CreateFragment extends Fragment {
         Preview preview = new Preview.Builder().build();
 
         imageCapture = new ImageCapture.Builder()
-                .setMaxResolution(new Size (1920, 1080))
+                .setMaxResolution(new Size(1920, 1080))
                 .build();
 
         videoCapture = new VideoCapture.Builder()
@@ -145,9 +153,12 @@ public class CreateFragment extends Fragment {
 
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
-        camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageCapture, videoCapture);
+        camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, videoCapture);
     }
 
+    /**
+     * Starts the fragment, called when fragment is visible to the user.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -159,7 +170,10 @@ public class CreateFragment extends Fragment {
         activityResultLauncher.launch(permissions);
     }
 
-    private void setListener() {
+    /**
+     * Sets listeners for the interactive UI elements.
+     */
+    private void setListeners() {
         btnPhoto.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -179,13 +193,16 @@ public class CreateFragment extends Fragment {
                     createViewModel.setRecording(false);
                 } else {
                     createViewModel.setRecording(true);
-                    btnVideo.setBackgroundTintList(ColorStateList.valueOf(R.color.light_grey));
+                    btnVideo.setBackgroundTintList(ColorStateList.valueOf(R.color.gray));
                     recordVideo();
                 }
             }
         });
     }
 
+    /**
+     * Takes a picture and saves it temporarily
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void capturePicture() {
         String filePath = getOutputFile();
@@ -216,6 +233,9 @@ public class CreateFragment extends Fragment {
                 });
     }
 
+    /**
+     * Records video and saves it temporarily
+     */
     @SuppressLint("RestrictedApi")
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void recordVideo() {
@@ -240,8 +260,6 @@ public class CreateFragment extends Fragment {
                         Log.d(TAG, "onVideoSaved: Saved to: " + filePath);
 
                         navToPostFragment(videoFile.getAbsolutePath(), false);
-
-//                        Toast.makeText(getContext(), "Saved to: " + filePath, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -251,6 +269,11 @@ public class CreateFragment extends Fragment {
                 });
     }
 
+    /**
+     * Gets the output file location for the picture/video.
+     *
+     * @return file location of the picture/video
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
     private String getOutputFile() {
         Optional<File> pictureOptional = Arrays.stream(getContext().getExternalMediaDirs()).findFirst();
@@ -269,14 +292,15 @@ public class CreateFragment extends Fragment {
             }
         }
 
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss", Locale.US).format(Calendar.getInstance().getTime());
 
         return pictureDir.getAbsolutePath() + "/" + timestamp;
     }
 
     /**
      * Navigates to post fragment to create the actual post
-     * @param path for the media file
+     *
+     * @param path      for the media file
      * @param isPicture true if picture, false otherwise
      */
     private void navToPostFragment(String path, boolean isPicture) {
@@ -288,6 +312,9 @@ public class CreateFragment extends Fragment {
                 .navigate(R.id.action_nav_create_to_nav_post, bundle);
     }
 
+    /**
+     * Destroys the fragment, called when fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

@@ -21,11 +21,20 @@ import com.sszabo.life_tok.model.Event;
 import com.sszabo.life_tok.model.User;
 import com.sszabo.life_tok.util.FirebaseUtil;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
+/**
+ * View Model class for the Main Activity.
+ */
 public class MainViewModel extends ViewModel {
     private static final String TAG = MainViewModel.class.getSimpleName();
+
+    // TODO create hash table map of temp files stored so don't always have to download media to temp file
+    // TODO implement some form of cache throughout the app?
+    private Hashtable<Integer, File> hashtable;
 
     private static User currentUser;
 
@@ -33,11 +42,12 @@ public class MainViewModel extends ViewModel {
 
     private FirebaseUser currentFirebaseUser;
 
-    /**
-     * Used for checking the outcome of events
-     */
+    // Used for checking the outcome of events
     private boolean success;
 
+    /**
+     * Constructor for the main view model. Initializes all instance variables.
+     */
     public MainViewModel() {
         currentUser = null;
         currentFirebaseUser = null;
@@ -45,6 +55,11 @@ public class MainViewModel extends ViewModel {
         success = true;
     }
 
+    /**
+     * Adds snapshot listeners to a document reference. Specifically, is adds a snapshot listener
+     * to the current user's document.
+     * @return true if successfully added, false otherwise
+     */
     public boolean addSnapshotListeners() {
         success = true;
         currentFirebaseUser = FirebaseUtil.getAuth().getCurrentUser();
@@ -98,8 +113,8 @@ public class MainViewModel extends ViewModel {
 
     /**
      * Updates the data in the authentication repository if the data in Firestore changed
-     * @param username
-     * @param email
+     * @param username of the user
+     * @param email of the user
      */
     private void updateUserDataAuth(String username, String email) {
         FirebaseUser usr = FirebaseUtil.getAuth().getCurrentUser();
@@ -137,26 +152,26 @@ public class MainViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Gets the current User object
+     * @return User object
+     */
     public static User getCurrentUser() {
         return currentUser;
     }
 
+    /**
+     * Sets the current User object
+     * @param user object to be set
+     */
     public static void setCurrentUser(User user) {
         MainViewModel.currentUser = user;
     }
 
-    public DocumentReference getUserDocRef() {
-        return userDocRef;
-    }
-
-    public void setUserDocRef(DocumentReference userDocRef) {
-        this.userDocRef = userDocRef;
-    }
-
-    public FirebaseUser getCurrentFirebaseUser() {
-        return currentFirebaseUser;
-    }
-
+    /**
+     * Sets the current Firebase user
+     * @param user Firebase user to be set
+     */
     public void setCurrentFirebaseUser(FirebaseUser user) {
         this.currentFirebaseUser = user;
     }
