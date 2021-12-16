@@ -48,8 +48,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Fragment class for the settings a user can make (to their profile).
+ * Contains all information/interactions for modifying their profile.
+ */
 public class SettingsFragment extends Fragment {
-
     private static final String TAG = SettingsViewModel.class.getSimpleName();
 
     private SettingsViewModel settingsViewModel;
@@ -80,9 +83,17 @@ public class SettingsFragment extends Fragment {
     private Button btnDeleteProfile;
     private ProgressBar progressBarSettings;
 
+    /**
+     * Creates the view for the settings fragment. Sets up bindings and listeners.
+     *
+     * @param inflater           the layout inflater
+     * @param container          the View Group container
+     * @param savedInstanceState saved state bundle
+     * @return root binding
+     */
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
 
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
@@ -124,17 +135,26 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        setUIListeners();
+        setListeners();
 
         return root;
     }
 
+    /**
+     * Starts the fragment, called when fragment is visible to the user.
+     */
     @Override
     public void onStart() {
         super.onStart();
         getAndSetUserData();
     }
 
+    /**
+     * Selector for menu options.
+     *
+     * @param item that was clicked
+     * @return false for normal menu processing, true if handled privately
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -145,7 +165,10 @@ public class SettingsFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setUIListeners() {
+    /**
+     * Sets listeners for the interactive UI elements.
+     */
+    private void setListeners() {
         User user = MainViewModel.getCurrentUser();
         String uid = user.getId();
 
@@ -202,6 +225,7 @@ public class SettingsFragment extends Fragment {
                             });
                 }
 
+                // TODO? Could use .set instead of .update
                 updateTasks.add(FirebaseUtil.getFirestore()
                         .collection("users")
                         .document(uid)
@@ -344,6 +368,7 @@ public class SettingsFragment extends Fragment {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
                                             Toast.makeText(getContext(), "Could not delete private event", Toast.LENGTH_SHORT).show();
+                                            e.printStackTrace();
                                         }
                                     });
                         }
@@ -413,6 +438,7 @@ public class SettingsFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getContext(), "Could not delete media", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
                     }
                 });
     }
@@ -434,6 +460,9 @@ public class SettingsFragment extends Fragment {
                 });
     }
 
+    /**
+     * Gets all the user data/media so the information can be set and displayed.
+     */
     private void getAndSetUserData() {
         User user = MainViewModel.getCurrentUser();
 
@@ -485,6 +514,9 @@ public class SettingsFragment extends Fragment {
         });
     }
 
+    /**
+     * Destroys the fragment, called when fragment is no longer in use.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -492,9 +524,9 @@ public class SettingsFragment extends Fragment {
     }
 
     /**
-     * Sets and verifies all user registration fields
+     * Sets and verifies all user setting fields
      *
-     * @return
+     * @return true if all fields are valid, false otherwise
      */
     private boolean setAndVerifyFields() {
         boolean valid = true;

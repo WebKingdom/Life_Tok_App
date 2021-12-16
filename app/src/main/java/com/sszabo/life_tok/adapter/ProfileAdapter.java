@@ -51,6 +51,13 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
         eventsList = events;
     }
 
+    /**
+     * Creates the Profile vView Holder
+     *
+     * @param parent   the parent View Group
+     * @param viewType integer type of view
+     * @return the Profile View Holder
+     */
     @NonNull
     @Override
     public ProfileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -60,7 +67,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
 
     /**
      * Binds the elements in the holder to an event specified by the position (index).
-     * @param holder the ViewHolder to bind to
+     *
+     * @param holder   the ViewHolder to bind to
      * @param position the index in the list of events
      */
     @Override
@@ -84,6 +92,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(v.getContext(), "Failed to delete event media", Toast.LENGTH_SHORT).show();
                                 Log.d(TAG, "onFailure: failed to delete event " + event.getId() + " media");
+                                e.printStackTrace();
                             }
                         });
 
@@ -123,6 +132,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
                                     Toast.makeText(v.getContext(), "Failed to delete from public event list", Toast.LENGTH_SHORT).show();
                                     Log.d(TAG, "onFailure: failed to delete public event ID: " + event.getId() +
                                             " from public events list");
+                                    e.printStackTrace();
                                 }
                             });
 
@@ -220,6 +230,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
         });
     }
 
+    /**
+     * Get the total number of items in the adapter
+     *
+     * @return total number fo items in adapter
+     */
     @Override
     public int getItemCount() {
         return eventsList.size();

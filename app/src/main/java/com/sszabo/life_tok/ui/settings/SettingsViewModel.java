@@ -2,10 +2,16 @@ package com.sszabo.life_tok.ui.settings;
 
 import androidx.lifecycle.ViewModel;
 
+/**
+ * View Model class for the Settings Fragment.
+ */
 public class SettingsViewModel extends ViewModel {
-    // TODO: Implement the ViewModel
+
     private boolean profPicUpdated;
 
+    /**
+     * Constructor
+     */
     public SettingsViewModel() {
         profPicUpdated = false;
     }

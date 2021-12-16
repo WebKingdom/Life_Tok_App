@@ -52,6 +52,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         this.requestManager = requestManager;
     }
 
+    /**
+     * Creates the Feed View Holder
+     *
+     * @param parent   the parent View Group
+     * @param viewType integer type of view
+     * @return the Feed View Holder
+     */
     @NonNull
     @Override
     public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -61,7 +68,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     /**
      * Binds the elements in the holder to an event specified by the position (index).
-     * @param holder the ViewHolder to bind to
+     *
+     * @param holder   the ViewHolder to bind to
      * @param position the index in the list of events
      */
     @Override
@@ -170,6 +178,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         });
     }
 
+    /**
+     * Get the total number of items in the adapter
+     *
+     * @return total number of items in adapter
+     */
     @Override
     public int getItemCount() {
         return eventsList.size();

@@ -9,7 +9,28 @@ import androidx.core.os.HandlerCompat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Application class for Life Tok. Contains an executor service and a handler.
+ */
 public class LifeTokApplication extends Application {
-    public ExecutorService executorService = Executors.newFixedThreadPool(2);
-    public Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+
+    /**
+     * Executor Service for running tasks asynchronously or off the main thread
+     */
+    public ExecutorService executorService;
+
+    /**
+     * The Handler for the main thread
+     */
+    public Handler mainThreadHandler;
+
+    public void initApp() {
+        if (executorService == null || executorService.isShutdown()) {
+            executorService = Executors.newSingleThreadExecutor();
+        }
+
+        if (mainThreadHandler == null) {
+            mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+        }
+    }
 }

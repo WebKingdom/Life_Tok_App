@@ -76,8 +76,9 @@ public class CreateFragment extends Fragment {
      * @param savedInstanceState saved state bundle
      * @return root binding
      */
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         createViewModel = new ViewModelProvider(this).get(CreateViewModel.class);
 
         binding = FragmentCreateBinding.inflate(inflater, container, false);
@@ -155,6 +156,9 @@ public class CreateFragment extends Fragment {
         camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, videoCapture);
     }
 
+    /**
+     * Starts the fragment, called when fragment is visible to the user.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -256,8 +260,6 @@ public class CreateFragment extends Fragment {
                         Log.d(TAG, "onVideoSaved: Saved to: " + filePath);
 
                         navToPostFragment(videoFile.getAbsolutePath(), false);
-
-//                        Toast.makeText(getContext(), "Saved to: " + filePath, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -310,6 +312,9 @@ public class CreateFragment extends Fragment {
                 .navigate(R.id.action_nav_create_to_nav_post, bundle);
     }
 
+    /**
+     * Destroys the fragment, called when fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

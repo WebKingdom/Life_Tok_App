@@ -40,7 +40,6 @@ import java.io.IOException;
 public class EventViewFragment extends Fragment {
     private static final String TAG = EventViewFragment.class.getSimpleName();
 
-    private EventViewModel eventViewModel;
     private FragmentEventViewBinding binding;
 
     private TextView txtEventName;
@@ -62,11 +61,9 @@ public class EventViewFragment extends Fragment {
      * @param savedInstanceState saved state bundle
      * @return root binding
      */
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        eventViewModel = new ViewModelProvider(this).get(EventViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentEventViewBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -156,6 +153,9 @@ public class EventViewFragment extends Fragment {
         txtEventTime.setText(event.getTimestamp().toDate().toString());
     }
 
+    /**
+     * Resumes the fragment, called when it is visible to user and is running.
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -206,6 +206,7 @@ public class EventViewFragment extends Fragment {
 
     /**
      * Selector for menu options.
+     *
      * @param item that was clicked
      * @return false for normal menu processing, true if handled privately
      */
@@ -230,6 +231,9 @@ public class EventViewFragment extends Fragment {
                 .navigate(R.id.action_nav_event_view_to_nav_map, bundle);
     }
 
+    /**
+     * Destroys the fragment, called when fragment is no longer in use.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();

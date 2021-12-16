@@ -36,13 +36,13 @@ import com.sszabo.life_tok.util.FirebaseUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /**
  * Fragment class for the home scrollable feed of events.
  */
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
     private ViewPager2 feedViewPager;
 
@@ -50,10 +50,17 @@ public class HomeFragment extends Fragment {
     private FeedAdapter feedAdapter;
     private TextView txtFeedMessage;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
+    /**
+     * Creates the view for the home fragment. Sets up bindings and listeners.
+     *
+     * @param inflater           the layout inflater
+     * @param container          the View Group container
+     * @param savedInstanceState saved state bundle
+     * @return root binding
+     */
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -66,6 +73,10 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Starts the fragment, called when fragment is visible to the user.
+     * Gets all the events of followed users.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -92,6 +103,12 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /**
+     * Gets all the events for the users, based on their ID, in the provided list.
+     * Used to set up the following events list and scrollable feed.
+     *
+     * @param listUIDs list of user IDs to get events for
+     */
     private void getFollowingUserEvents(ArrayList<String> listUIDs) {
         // TODO cache events or add snapshot listeners so we don't always have to restart query
         eventsList.clear();
@@ -133,6 +150,12 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    /**
+     * Creates the top options menu.
+     *
+     * @param menu     the Menu object
+     * @param inflater the Menu Inflater
+     */
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.default_menu, menu);
@@ -142,41 +165,40 @@ public class HomeFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // TODO try using executor on other listeners!
                 // search users to follow
                 if (query.isEmpty() || query.length() < 2) {
                     Toast.makeText(getContext(), "Must search more than 1 letters", Toast.LENGTH_SHORT).show();
                     return true;
                 }
 
+                // TODO try using executor on other listeners
                 ArrayList<User> searchUsers = new ArrayList<>();
                 final String q = query.toLowerCase();
+                Executor exec = ((LifeTokApplication) getActivity().getApplication()).executorService;
                 FirebaseUtil.getFirestore()
                         .collection("users")
                         .get()
-                        .addOnCompleteListener(((LifeTokApplication) getActivity().getApplication()).executorService,
-                                new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        for (QueryDocumentSnapshot snapshot : task.getResult()) {
-                                            User user = snapshot.toObject(User.class);
-                                            if (user.getUsername().toLowerCase().contains(q) ||
-                                                    user.getFirstName().toLowerCase().contains(q) ||
-                                                    user.getLastName().toLowerCase().contains(q) ||
-                                                    user.getEmail().toLowerCase().contains(q)) {
-                                                searchUsers.add(user);
-                                            }
-                                        }
-
-                                        if (searchUsers.isEmpty()) {
-                                            Toast.makeText(getContext(), "No users found", Toast.LENGTH_SHORT).show();
-                                            return;
-                                        }
-
-                                        displayUsers(searchUsers);
+                        .addOnCompleteListener(exec, new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot snapshot : task.getResult()) {
+                                    User user = snapshot.toObject(User.class);
+                                    if (user.getUsername().toLowerCase().contains(q) ||
+                                            user.getFirstName().toLowerCase().contains(q) ||
+                                            user.getLastName().toLowerCase().contains(q) ||
+                                            user.getEmail().toLowerCase().contains(q)) {
+                                        searchUsers.add(user);
                                     }
-                                });
+                                }
 
+                                if (searchUsers.isEmpty()) {
+                                    Toast.makeText(getContext(), "No users found", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+
+                                displayUsers(searchUsers);
+                            }
+                        });
                 return true;
             }
 
@@ -200,6 +222,9 @@ public class HomeFragment extends Fragment {
         return Glide.with(this).setDefaultRequestOptions(options);
     }
 
+    /**
+     * Destroys the fragment, called when fragment is no longer in use.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
